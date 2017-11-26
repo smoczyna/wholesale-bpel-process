@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<process
+    name="MakeBooking"
+    targetNamespace="http://enterprise.netbeans.org/bpel/WholesaleBookingProcessor-BPEL/MakeBooking-BPEL"
+    xmlns:tns="http://enterprise.netbeans.org/bpel/WholesaleBookingProcessor-BPEL/MakeBooking-BPEL"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" 
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2"
+    xmlns:sxat="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Attachment"
+    xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling" xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions" xmlns:ns0="http://eu.squadd/connectors/wholesaleBooking">
+    <import namespace="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/MakeBookingService" location="MakeBookingService.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/GetFinEventCategoryService" location="GetFinEventCategoryService.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/WriteSubledgerOouput" location="WriteSubledgerOutput.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <partnerLinks>
+        <partnerLink name="FinancialEventCategoryService" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/GetFinEventCategoryService" partnerLinkType="tns:GetFinEventCategoryService" partnerRole="GetFinEventCategoryServicePortTypeRole"/>
+        <partnerLink name="WriteSubledger" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/WriteSubledgerOouput" partnerLinkType="tns:WriteSubledgerOouput" partnerRole="WriteSubledgerOouputPortTypeRole"/>
+        <partnerLink name="MakeBookingInput" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/MakeBookingService" partnerLinkType="tns:MakeBookingService" myRole="MakeBookingServicePortTypeRole"/>
+    </partnerLinks>
+    <variables>
+        <variable name="WriteSubledgerOffsetOutputIn" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/WriteSubledgerOouput" messageType="tns:WriteSubledgerOutputOperationRequest"/>
+        <variable name="WriteSubledgerOutputIn" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/WriteSubledgerOouput" messageType="tns:WriteSubledgerOutputOperationRequest"/>
+        <variable name="MakeBookingResponse" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/MakeBookingService" messageType="tns:MakeBookingServiceOperationResponse"/>
+        <variable name="bypassBooking" type="xs:boolean"/>
+        <variable name="debitCreditIndicator" type="xs:integer"/>
+        <variable name="GetFinEventCategoryOutput" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/GetFinEventCategoryService" messageType="tns:GetFinEventCategoryServiceOperationResponse"/>
+        <variable name="GetFinEventCategoryInput" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/GetFinEventCategoryService" messageType="tns:GetFinEventCategoryServiceOperationRequest"/>
+        <variable name="homeEqualsServiceSbidIndicator" type="xs:string"/>
+        <variable name="altBookingIndicator" type="xs:boolean"/>
+        <variable name="MakeBookingServiceInput" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/MakeBookingService" messageType="tns:MakeBookingServiceOperationRequest"/>
+    </variables>
+    <sequence>
+        <receive name="ReceiveMakeBookingInput" createInstance="yes" partnerLink="MakeBookingInput" operation="MakeBookingServiceOperation" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/MakeBookingService" portType="tns:MakeBookingServicePortType" variable="MakeBookingServiceInput"/>
+        <assign name="InitBooking">
+            <copy>
+                <from>false()</from>
+                <to variable="altBookingIndicator"/>
+            </copy>
+            <copy>
+                <from>' '</from>
+                <to variable="homeEqualsServiceSbidIndicator"/>
+            </copy>
+        </assign>
+        <flow name="Flow1">
+            <if name="IfBilled">
+                <condition>count($MakeBookingServiceInput.bookingInput/ns0:billedBookingInputRecord) &gt; 0</condition>
+                    <assign name="AssingBiiled">
+                        <copy>
+                            <from>$MakeBookingServiceInput.bookingInput/ns0:billedBookingInputRecord</from>
+                            <to variable="debitCreditIndicator"/>
+                        </copy>
+                        <copy>
+                            <from>$MakeBookingServiceInput.bookingInput/ns0:billedBookingInputRecord/ns0:debitcreditindicator</from>
+                            <to variable="debitCreditIndicator"/>
+                        </copy>
+                    </assign>
+            </if>
+            <if name="IfUnbilled">
+                <condition>count($MakeBookingServiceInput.bookingInput/ns0:unbilledBookingInputRecord) &gt; 0</condition>
+                <assign name="AssignUnbilled">
+                    <copy>
+                        <from>$MakeBookingServiceInput.bookingInput/ns0:unbilledBookingInputRecord/ns0:debitcreditindicator</from>
+                        <to variable="debitCreditIndicator"/>
+                    </copy>
+                    <copy>
+                        <from>$MakeBookingServiceInput.bookingInput/ns0:unbilledBookingInputRecord/ns0:debitcreditindicator</from>
+                        <to variable="debitCreditIndicator"/>
+                    </copy>
+                </assign>
+            </if>
+            <if name="IfAdminFee">
+                <condition>count($MakeBookingServiceInput.bookingInput/ns0:adminfeeBookingInputRecord) &gt; 0</condition>
+                <assign name="AssignAdminFee">
+                    <copy>
+                        <from>$MakeBookingServiceInput.bookingInput/ns0:adminfeeBookingInputRecord</from>
+                        <to variable="debitCreditIndicator"/>
+                    </copy>
+                    <copy>
+                        <from>$MakeBookingServiceInput.bookingInput/ns0:adminfeeBookingInputRecord/ns0:debitcreditindicator</from>
+                        <to variable="debitCreditIndicator"/>
+                    </copy>
+                </assign>
+            </if>
+        </flow>
+        <assign name="AssignFinEventCatInput">
+            <copy>
+                <from variable="homeEqualsServiceSbidIndicator"/>
+                <to variable="GetFinEventCategoryInput" part="homeEqualsServiceSbidIndicator"/>
+            </copy>
+            <copy>
+                <from variable="altBookingIndicator"/>
+                <to variable="GetFinEventCategoryInput" part="altBookingIndicator"/>
+            </copy>
+            <copy>
+                <from>$MakeBookingServiceInput.bookingInput/ns0:interExchangeCarrierCode</from>
+                <to variable="GetFinEventCategoryInput" part="iecCode"/>
+            </copy>
+            <copy>
+                <from variable="debitCreditIndicator"/>
+                <to variable="GetFinEventCategoryInput" part="debitCreditIndicator"/>
+            </copy>
+            <copy>
+                <from>$MakeBookingServiceInput.bookingInput/ns0:productId</from>
+                <to variable="GetFinEventCategoryInput" part="productId"/>
+            </copy>
+        </assign>
+        <invoke name="CallFinEventCaterogy" partnerLink="FinancialEventCategoryService" operation="GetFinEventCategoryServiceOperation" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/GetFinEventCategoryService" portType="tns:GetFinEventCategoryServicePortType" inputVariable="GetFinEventCategoryInput" outputVariable="GetFinEventCategoryOutput"/>
+        <scope name="BypassBooking">
+            <variables>
+                <variable name="bypassBookingResult" type="xs:boolean"/>
+            </variables>
+            <sequence name="bypassBookingSequence">
+                <assign name="InitResult">
+                    <copy>
+                        <from>false()</from>
+                        <to variable="bypassBookingResult"/>
+                    </copy>
+                </assign>
+                <if name="If1">
+                    <condition>$GetFinEventCategoryOutput.finEventCategoryOutput/ns0:bamsaffiliateindicator = 'N' or string-length($GetFinEventCategoryOutput.finEventCategoryOutput/ns0:companycode) = 0</condition>
+                    <sequence name="Sequence1">
+                        <assign name="setTrue1">
+                            <copy>
+                                <from>true()</from>
+                                <to variable="bypassBookingResult"/>
+                            </copy>
+                        </assign>
+                    </sequence>
+                </if>
+                <if name="If2">
+                    <condition>$MakeBookingServiceInput.bookingInput/ns0:fileSource = 'M' and string-length($GetFinEventCategoryOutput.finEventCategoryOutput/ns0:homesidequalsservingsidindicator) = 0</condition>
+                    <assign name="setFalse1">
+                        <copy>
+                            <from>false()</from>
+                            <to variable="bypassBookingResult"/>
+                        </copy>
+                    </assign>
+                </if>
+                <if name="If3">
+                    <condition>$MakeBookingServiceInput.bookingInput/ns0:fileSource = 'U' and string-length($GetFinEventCategoryOutput.finEventCategoryOutput/ns0:billingaccrualindicator) = 'Y'</condition>
+                    <assign name="AssignFalse2">
+                        <copy>
+                            <from>false()</from>
+                            <to variable="bypassBookingResult"/>
+                        </copy>
+                    </assign>
+                </if>
+                <if name="If4">
+                    <condition>$MakeBookingServiceInput.bookingInput/ns0:fileSource = 'B'</condition>
+                    <if name="If5">
+                        <condition>$GetFinEventCategoryOutput.finEventCategoryOutput/ns0:homesidequalsservingsidindicator = 'Y' and $MakeBookingServiceInput.bookingInput/ns0:homeEqualsServingSbid</condition>
+                        <assign name="AssignFalse3">
+                            <copy>
+                                <from>false()</from>
+                                <to variable="bypassBookingResult"/>
+                            </copy>
+                        </assign>
+                        <elseif>
+                            <condition>$GetFinEventCategoryOutput.finEventCategoryOutput/ns0:homesidequalsservingsidindicator = 'N' and $MakeBookingServiceInput.bookingInput/ns0:homeEqualsServingSbid = false()</condition>
+                            <if name="If6">
+                                <condition>$GetFinEventCategoryOutput.finEventCategoryOutput/ns0:alternatebookingindicator = 'N' and not($altBookingIndicator) or $GetFinEventCategoryOutput.finEventCategoryOutput/ns0:alternatebookingindicator = 'Y' and $altBookingIndicator</condition>
+                                <assign name="AssignFalse4">
+                                    <copy>
+                                        <from>false()</from>
+                                        <to variable="bypassBookingResult"/>
+                                    </copy>
+                                </assign>
+                            </if>
+                        </elseif>
+                    </if>
+                </if>
+                <if name="If7">
+                    <condition>$bypassBookingResult and $MakeBookingServiceInput.bookingInput/ns0:homeEqualsServingSbid and (string-length($GetFinEventCategoryOutput.finEventCategoryOutput/ns0:foreignservedindicator) &gt; 0 or $GetFinEventCategoryOutput.finEventCategoryOutput/ns0:foreignservedindicator = 'N')</condition>
+                    <assign name="AssignTrue2">
+                        <copy>
+                            <from>true()</from>
+                            <to variable="bypassBookingResult"/>
+                        </copy>
+                    </assign>
+                </if>
+                <assign name="AssignResult">
+                    <copy>
+                        <from variable="bypassBookingResult"/>
+                        <to variable="bypassBooking"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </scope>
+        <if name="IfNoBypassBooking">
+            <condition>not($bypassBooking) and $MakeBookingServiceInput.bookingInput/ns0:chargeAmount &gt; 0</condition>
+            <sequence name="BookingSequence">
+                <flow name="Flow2">
+                    <if name="IfDR">
+                        <condition>$GetFinEventCategoryOutput.finEventCategoryOutput/ns0:financialeventnormalsign = 'DR' and $GetFinEventCategoryOutput.finEventCategoryOutput/ns0:debitcreditindicator = 'DR'</condition>
+                    </if>
+                    <if name="IfCR">
+                        <condition>$GetFinEventCategoryOutput.finEventCategoryOutput/ns0:financialeventnormalsign = 'CR' and $GetFinEventCategoryOutput.finEventCategoryOutput/ns0:debitcreditindicator = 'CR'</condition>
+                    </if>
+                </flow>
+                <assign name="AssignSubledger">
+                    <copy>
+                        <from>$GetFinEventCategoryOutput.finEventCategoryOutput/ns0:financialeventnumber</from>
+                        <to>$WriteSubledgerOutputIn.subledger/ns0:financialEventNumber</to>
+                    </copy>
+                    <copy>
+                        <from>$GetFinEventCategoryOutput.finEventCategoryOutput/ns0:billingaccrualindicator</from>
+                        <to>$WriteSubledgerOutputIn.subledger/ns0:billAccrualIndicator</to>
+                    </copy>
+                </assign>
+                <invoke name="InvokeSubledgerWriter" partnerLink="WriteSubledger" operation="WriteSubledgerOutputOperation" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/WriteSubledgerOouput" portType="tns:WriteSubledgerOutputPortType" inputVariable="WriteSubledgerOutputIn"/>
+                <assign name="AssignSubledgerOffset">
+                    <copy>
+                        <from>$WriteSubledgerOutputIn.subledger/ns0:subledgerTotalDebitAmount</from>
+                        <to>$WriteSubledgerOffsetOutputIn.subledger/ns0:subledgerTotalCreditAmount</to>
+                    </copy>
+                    <copy>
+                        <from>$WriteSubledgerOutputIn.subledger/ns0:subledgerTotalCreditAmount</from>
+                        <to>$WriteSubledgerOffsetOutputIn.subledger/ns0:subledgerTotalDebitAmount</to>
+                    </copy>
+                    <copy>
+                        <from>$WriteSubledgerOutputIn.subledger/ns0:subledgerSequenceNumber</from>
+                        <to>$WriteSubledgerOffsetOutputIn.subledger/ns0:subledgerSequenceNumber</to>
+                    </copy>
+                    <copy>
+                        <from>$WriteSubledgerOutputIn.subledger/ns0:financialmarketId</from>
+                        <to>$WriteSubledgerOffsetOutputIn.subledger/ns0:financialmarketId</to>
+                    </copy>
+                    <copy>
+                        <from>$WriteSubledgerOutputIn.subledger/ns0:financialCategory</from>
+                        <to>$WriteSubledgerOffsetOutputIn.subledger/ns0:financialCategory</to>
+                    </copy>
+                    <copy>
+                        <from>$WriteSubledgerOutputIn.subledger/ns0:financialEventNumber</from>
+                        <to>$WriteSubledgerOffsetOutputIn.subledger/ns0:financialEventNumber</to>
+                    </copy>
+                    <copy>
+                        <from>$WriteSubledgerOutputIn.subledger/ns0:jemsApplTransactioDate</from>
+                        <to>$WriteSubledgerOffsetOutputIn.subledger/ns0:jemsApplTransactioDate</to>
+                    </copy>
+                    <copy>
+                        <from>$WriteSubledgerOutputIn.subledger/ns0:reportStartDate</from>
+                        <to>$WriteSubledgerOffsetOutputIn.subledger/ns0:reportStartDate</to>
+                    </copy>
+                    <copy>
+                        <from>$WriteSubledgerOutputIn.subledger/ns0:jemsApplId</from>
+                        <to>$WriteSubledgerOffsetOutputIn.subledger/ns0:jemsApplId</to>
+                    </copy>
+                    <copy>
+                        <from>$WriteSubledgerOutputIn.subledger/ns0:jurnalEventNumber</from>
+                        <to>$WriteSubledgerOffsetOutputIn.subledger/ns0:jurnalEventNumber</to>
+                    </copy>
+                    <copy>
+                        <from>$WriteSubledgerOutputIn.subledger/ns0:jurnalEventExceptionCode</from>
+                        <to>$WriteSubledgerOffsetOutputIn.subledger/ns0:jurnalEventExceptionCode</to>
+                    </copy>
+                    <copy>
+                        <from>$WriteSubledgerOutputIn.subledger/ns0:jurnalEventReadInd</from>
+                        <to>$WriteSubledgerOffsetOutputIn.subledger/ns0:jurnalEventReadInd</to>
+                    </copy>
+                    <copy>
+                        <from>$WriteSubledgerOutputIn.subledger/ns0:generalLedgerTransactionNumber</from>
+                        <to>$WriteSubledgerOffsetOutputIn.subledger/ns0:generalLedgerTransactionNumber</to>
+                    </copy>
+                    <copy>
+                        <from>$WriteSubledgerOutputIn.subledger/ns0:billCycleNumber</from>
+                        <to>$WriteSubledgerOffsetOutputIn.subledger/ns0:billCycleNumber</to>
+                    </copy>
+                    <copy>
+                        <from>$WriteSubledgerOutputIn.subledger/ns0:billTypeCode</from>
+                        <to>$WriteSubledgerOffsetOutputIn.subledger/ns0:billTypeCode</to>
+                    </copy>
+                    <copy>
+                        <from>$WriteSubledgerOutputIn.subledger/ns0:billCycleMonthYear</from>
+                        <to>$WriteSubledgerOffsetOutputIn.subledger/ns0:billCycleMonthYear</to>
+                    </copy>
+                    <copy>
+                        <from>$WriteSubledgerOutputIn.subledger/ns0:billPhaseType</from>
+                        <to>$WriteSubledgerOffsetOutputIn.subledger/ns0:billPhaseType</to>
+                    </copy>
+                    <copy>
+                        <from>$WriteSubledgerOutputIn.subledger/ns0:billMonthInd</from>
+                        <to>$WriteSubledgerOffsetOutputIn.subledger/ns0:billMonthInd</to>
+                    </copy>
+                    <copy>
+                        <from>$WriteSubledgerOutputIn.subledger/ns0:billAccrualIndicator</from>
+                        <to>$WriteSubledgerOffsetOutputIn.subledger/ns0:billAccrualIndicator</to>
+                    </copy>
+                    <copy>
+                        <from>$WriteSubledgerOutputIn.subledger/ns0:paymentSourceCode</from>
+                        <to>$WriteSubledgerOffsetOutputIn.subledger/ns0:paymentSourceCode</to>
+                    </copy>
+                    <copy>
+                        <from>$WriteSubledgerOutputIn.subledger/ns0:discountOfferId</from>
+                        <to>$WriteSubledgerOffsetOutputIn.subledger/ns0:discountOfferId</to>
+                    </copy>
+                    <copy>
+                        <from>$WriteSubledgerOutputIn.subledger/ns0:updateUserId</from>
+                        <to>$WriteSubledgerOffsetOutputIn.subledger/ns0:updateUserId</to>
+                    </copy>
+                    <copy>
+                        <from>$WriteSubledgerOutputIn.subledger/ns0:updateTimestamp</from>
+                        <to>$WriteSubledgerOffsetOutputIn.subledger/ns0:updateTimestamp</to>
+                    </copy>
+                </assign>
+                <invoke name="InvokeSubledgerOffsetWriter" partnerLink="WriteSubledger" operation="WriteSubledgerOutputOperation" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/WriteSubledgerOouput" portType="tns:WriteSubledgerOutputPortType" inputVariable="WriteSubledgerOffsetOutputIn"/>
+            </sequence>
+        </if>
+        <assign name="AssignResponse"/>
+        <reply name="MakeBookingResponse" partnerLink="MakeBookingInput" operation="MakeBookingServiceOperation" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/MakeBookingService" portType="tns:MakeBookingServicePortType" variable="MakeBookingResponse"/>
+    </sequence>
+</process>

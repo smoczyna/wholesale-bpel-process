@@ -6,6 +6,9 @@
             elementFormDefault="qualified">
     
     <xsd:include schemaLocation="MinWholesaleBooking.xsd"/>
+    <xsd:include schemaLocation="BilledCsvFileDTO.xsd"/>
+    <xsd:include schemaLocation="AdminFeeCsvFileDTO.xsd"/>
+    <xsd:include schemaLocation="UnbilledCsvFileDTO.xsd"/>
     <xsd:complexType name="BaseBookingInterface">
         <xsd:complexContent>
             <xsd:extension xmlns:tns="http://eu.squadd/connectors/wholesaleBooking" base="tns:MinBookingInterface">
@@ -23,4 +26,44 @@
         </xsd:complexContent>
     </xsd:complexType>
     <xsd:element name="MinBookingInterface" type="tns:BaseBookingInterface"/>
+    
+    <xsd:complexType name="makeBookingInputType">
+        <xsd:sequence>
+            <xsd:element name="billedBookingInputRecord" type="tns:BilledCsvFileDTO" nillable="true"></xsd:element>
+            <xsd:element name="unbilledBookingInputRecord" type="tns:UnbilledCsvFileDTO" nillable="true"></xsd:element>
+            <xsd:element name="adminfeeBookingInputRecord" type="tns:AdminFeeCsvFileDTO" nillable="true"></xsd:element>
+            <xsd:element name="interExchangeCarrierCode" type="xsd:integer" nillable="false"></xsd:element>            
+            <xsd:element name="productId" type="xsd:integer"></xsd:element>
+            <xsd:element name="chargeAmount" type="xsd:double"></xsd:element>
+            <xsd:element name="fileSource" type="xsd:string"></xsd:element>
+            <xsd:element name="homeEqualsServingSbid" type="xsd:boolean"></xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="SummarySubledgerOutputRecord">        
+        <xsd:sequence>
+            <xsd:element name="jemsApplId" type="xsd:string" nillable="false" default= "BL"/>
+            <xsd:element name="reportStartDate" type="xsd:string" nillable="false"/>
+            <xsd:element name="jemsApplTransactioDate" type="xsd:string" nillable="false"/>
+            <xsd:element name="financialEventNumber" type="xsd:integer" nillable="false"/>
+            <xsd:element name="financialCategory" type="xsd:string" nillable="false"/> 
+            <xsd:element name="financialmarketId" type="xsd:string" nillable="false"/>
+            <xsd:element name="subledgerSequenceNumber" type="xsd:integer" nillable="false" default= "1"/>
+            <xsd:element name="subledgerTotalDebitAmount" type="xsd:double" nillable="false"/>
+            <xsd:element name="subledgerTotalCreditAmount" type="xsd:double" nillable="false"/>
+            <xsd:element name="jurnalEventNumber" type="xsd:string" nillable="false"/>
+            <xsd:element name="jurnalEventExceptionCode" type="xsd:string" nillable="false"/>
+            <xsd:element name="jurnalEventReadInd" type="xsd:string" nillable="false" default= "N"/>
+            <xsd:element name="generalLedgerTransactionNumber" type="xsd:integer" nillable="false" default= "0"/>
+            <xsd:element name="billCycleNumber" type="xsd:string" nillable="false" default= "00"/>
+            <xsd:element name="billTypeCode" type="xsd:string" nillable="false" default= "C "/>
+            <xsd:element name="billCycleMonthYear" type="xsd:string" nillable="false"/>
+            <xsd:element name="billPhaseType" type="xsd:string" nillable="false" default= "J6"/>
+            <xsd:element name="billMonthInd" type="xsd:string" nillable="false" default= "Y"/>
+            <xsd:element name="billAccrualIndicator" type="xsd:string" nillable="false" default= "N"/>
+            <xsd:element name="paymentSourceCode" type="xsd:string" nillable="false"/>
+            <xsd:element name="discountOfferId" type="xsd:integer" nillable="false" default= "0"/>
+            <xsd:element name="updateUserId" type="xsd:string" nillable="false" default= "WBApp"/>
+            <xsd:element name="updateTimestamp" type="xsd:string" nillable="false"/>
+        </xsd:sequence>     
+    </xsd:complexType>
 </xsd:schema>

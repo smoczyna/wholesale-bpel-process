@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://eu.squadd/connectors/wholesaleBooking"
+            xmlns:tns="http://eu.squadd/connectors/wholesaleBooking"
+            elementFormDefault="qualified">
+    
+    <xsd:complexType name="FinancialEventCategoryDAO">
+        <xsd:sequence>
+            <xsd:element name="productid" type="xsd:string" nillable="false"/>
+            <xsd:element name="homesidequalsservingsidindicator" type="xsd:string" nillable="false"/>
+            <xsd:element name="alternatebookingindicator" type="xsd:string" nillable="false"/>
+            <xsd:element name="financialmarketid" type="xsd:string" nillable="false"/>
+            <xsd:element name="interexchangecarriercode" type="xsd:integer" nillable="false"/>
+            <xsd:element name="financialeventnumber" type="xsd:integer" nillable="false"/>
+            <xsd:element name="financialcategory" type="xsd:integer" nillable="false"/>
+            <xsd:element name="financialmappingeffectivedate" type="xsd:string" nillable="false"/>
+            <xsd:element name="glaccountnumber" type="xsd:string" nillable="false"/>
+            <xsd:element name="billtypecode" type="xsd:string" nillable="false"/>
+            <xsd:element name="financialeventcategorycode" type="xsd:string" nillable="false"/>
+            <xsd:element name="financialeventeffectivedate" type="xsd:string" nillable="false"/>
+            <xsd:element name="financialeventenddate" type="xsd:string" nillable="false"/>
+            <xsd:element name="transactionitemtypecode" type="xsd:string" nillable="false"/>
+            <xsd:element name="financialgroupcode" type="xsd:string" nillable="false"/>
+            <xsd:element name="financialcategoryeffectivedate" type="xsd:string" nillable="false"/>
+            <xsd:element name="financialcategoryenddate" type="xsd:string" nillable="false"/>
+            <xsd:element name="taxjurisdictionlevel" type="xsd:string" nillable="false"/>
+            <xsd:element name="taxtypecode" type="xsd:string" nillable="false"/>
+            <xsd:element name="contracttermsid" type="xsd:integer" nillable="false"/>
+            <xsd:element name="miscfinancialtransactionnumber" type="xsd:integer" nillable="false"/>
+            <xsd:element name="statecode" type="xsd:string" nillable="false"/>
+            <xsd:element name="adminfeereasoncode" type="xsd:string" nillable="false"/>
+            <xsd:element name="financialmappingenddate" type="xsd:string" nillable="false"/>
+            <xsd:element name="glfinancialaccounttypecode" type="xsd:string" nillable="false"/>
+            <xsd:element name="bamsaffiliateindicator" type="xsd:string" nillable="false"/>
+            <xsd:element name="billingaccrualindicator" type="xsd:string" nillable="false"/>
+            <xsd:element name="cashpostindicator" type="xsd:string" nillable="false"/>
+            <xsd:element name="cellularcarrierrslcode" type="xsd:string" nillable="false"/>
+            <xsd:element name="companycode" type="xsd:string" nillable="false"/>
+            <xsd:element name="creditcardtypecode" type="xsd:string" nillable="false"/>
+            <xsd:element name="debitcreditindicator" type="xsd:string" nillable="false"/>
+            <xsd:element name="directindirectindicator" type="xsd:string" nillable="false"/>
+            <xsd:element name="exceptioncode" type="xsd:string" nillable="false"/>
+            <xsd:element name="financialcategorydescription" type="xsd:string" nillable="false"/>
+            <xsd:element name="financialeventcategorytype" type="xsd:string" nillable="false"/>
+            <xsd:element name="financialeventdescription" type="xsd:string" nillable="false"/>
+            <xsd:element name="financialeventdetails" type="xsd:string" nillable="false"/>
+            <xsd:element name="financialeventnormalsign" type="xsd:string" nillable="false"/>
+            <xsd:element name="financialeventprocessingcode" type="xsd:string" nillable="false"/>
+            <xsd:element name="financialmarketsourcecode" type="xsd:string" nillable="false"/>
+            <xsd:element name="foreignservedindicator" type="xsd:string" nillable="false"/>
+            <xsd:element name="glaccountdescription" type="xsd:string" nillable="false"/>
+            <xsd:element name="glcostcenternumber" type="xsd:string" nillable="false"/>
+            <xsd:element name="gleffectivedate" type="xsd:string" nillable="false"/>
+            <xsd:element name="glenddate" type="xsd:string" nillable="false"/>
+            <xsd:element name="gllocationid" type="xsd:string" nillable="false"/>
+            <xsd:element name="glproductid" type="xsd:string" nillable="false"/>
+            <xsd:element name="legalentityeqindicator" type="xsd:string" nillable="false"/>
+            <xsd:element name="paymentmediacode" type="xsd:string" nillable="false"/>
+            <xsd:element name="paymentsourcecode" type="xsd:string" nillable="false"/>
+            <xsd:element name="pricebandtypecode" type="xsd:string" nillable="false"/>
+            <xsd:element name="processinggroupnumber" type="xsd:string" nillable="false"/>
+            <xsd:element name="dummy" type="xsd:string" nillable="false"/>
+        </xsd:sequence>
+    </xsd:complexType>
+</xsd:schema>
