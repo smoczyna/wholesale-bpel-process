@@ -13,12 +13,16 @@
     <import namespace="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/MakeBookingService" location="MakeBookingService.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
     <import namespace="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/GetFinEventCategoryService" location="GetFinEventCategoryService.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
     <import namespace="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/WriteSubledgerOouput" location="WriteSubledgerOutput.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/GetFinCatOffsetService" location="GetFinCatOffsetService.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
     <partnerLinks>
         <partnerLink name="FinancialEventCategoryService" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/GetFinEventCategoryService" partnerLinkType="tns:GetFinEventCategoryService" partnerRole="GetFinEventCategoryServicePortTypeRole"/>
+        <partnerLink name="FinCatOffsetService" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/GetFinCatOffsetService" partnerLinkType="tns:GetFinCatOffsetService" partnerRole="GetFinCatOffsetServicePortTypeRole"/>
         <partnerLink name="WriteSubledger" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/WriteSubledgerOouput" partnerLinkType="tns:WriteSubledgerOouput" partnerRole="WriteSubledgerOouputPortTypeRole"/>
         <partnerLink name="MakeBookingInput" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/MakeBookingService" partnerLinkType="tns:MakeBookingService" myRole="MakeBookingServicePortTypeRole"/>
     </partnerLinks>
     <variables>
+        <variable name="GetFinCatOffsetOut" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/GetFinCatOffsetService" messageType="tns:GetFinCatOffsetServiceOperationResponse"/>
+        <variable name="GetFinCatOffsetIn" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/GetFinCatOffsetService" messageType="tns:GetFinCatOffsetServiceOperationRequest"/>
         <variable name="WriteSubledgerOffsetOutputIn" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/WriteSubledgerOouput" messageType="tns:WriteSubledgerOutputOperationRequest"/>
         <variable name="WriteSubledgerOutputIn" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/WriteSubledgerOouput" messageType="tns:WriteSubledgerOutputOperationRequest"/>
         <variable name="MakeBookingResponse" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/MakeBookingService" messageType="tns:MakeBookingServiceOperationResponse"/>
@@ -207,8 +211,13 @@
                         <from>$GetFinEventCategoryOutput.finEventCategoryOutput/ns0:billingaccrualindicator</from>
                         <to>$WriteSubledgerOutputIn.subledger/ns0:billAccrualIndicator</to>
                     </copy>
+                    <copy>
+                        <from>$GetFinEventCategoryOutput.finEventCategoryOutput/ns0:financialeventnumber</from>
+                        <to variable="GetFinCatOffsetIn" part="finCatIn"/>
+                    </copy>
                 </assign>
                 <invoke name="InvokeSubledgerWriter" partnerLink="WriteSubledger" operation="WriteSubledgerOutputOperation" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/WriteSubledgerOouput" portType="tns:WriteSubledgerOutputPortType" inputVariable="WriteSubledgerOutputIn"/>
+                <invoke name="InvokeFinCatOffset" partnerLink="FinCatOffsetService" operation="GetFinCatOffsetServiceOperation" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/GetFinCatOffsetService" portType="tns:GetFinCatOffsetServicePortType" inputVariable="GetFinCatOffsetIn" outputVariable="GetFinCatOffsetOut"/>
                 <assign name="AssignSubledgerOffset">
                     <copy>
                         <from>$WriteSubledgerOutputIn.subledger/ns0:subledgerTotalDebitAmount</from>
@@ -225,10 +234,6 @@
                     <copy>
                         <from>$WriteSubledgerOutputIn.subledger/ns0:financialmarketId</from>
                         <to>$WriteSubledgerOffsetOutputIn.subledger/ns0:financialmarketId</to>
-                    </copy>
-                    <copy>
-                        <from>$WriteSubledgerOutputIn.subledger/ns0:financialCategory</from>
-                        <to>$WriteSubledgerOffsetOutputIn.subledger/ns0:financialCategory</to>
                     </copy>
                     <copy>
                         <from>$WriteSubledgerOutputIn.subledger/ns0:financialEventNumber</from>
@@ -301,6 +306,10 @@
                     <copy>
                         <from>$WriteSubledgerOutputIn.subledger/ns0:updateTimestamp</from>
                         <to>$WriteSubledgerOffsetOutputIn.subledger/ns0:updateTimestamp</to>
+                    </copy>
+                    <copy>
+                        <from variable="GetFinCatOffsetOut" part="finCatOut"/>
+                        <to>$WriteSubledgerOffsetOutputIn.subledger/ns0:financialCategory</to>
                     </copy>
                 </assign>
                 <invoke name="InvokeSubledgerOffsetWriter" partnerLink="WriteSubledger" operation="WriteSubledgerOutputOperation" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/WriteSubledgerOouput" portType="tns:WriteSubledgerOutputPortType" inputVariable="WriteSubledgerOffsetOutputIn"/>
