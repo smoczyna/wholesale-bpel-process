@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://eu.squadd/connectors/wholesaleBooking"
+            xmlns:tns="http://eu.squadd/connectors/wholesaleBooking"
+            elementFormDefault="qualified">
+    
+    <xsd:complexType name="BilledCsvFileDTO">
+        <xsd:sequence>
+            <xsd:element name="productid" type="xsd:integer" nillable="false"/>
+            <xsd:element name="homesidbid" type="xsd:string" nillable="false"/>
+            <xsd:element name="servesidbid" type="xsd:string" nillable="false"/>
+            <xsd:element name="rateperiodclassificationid" type="xsd:string" nillable="false"/>
+            <xsd:element name="effectivedate" type="xsd:string" nillable="false"/>
+            <xsd:element name="enddate" type="xsd:string" nillable="false"/>
+            <xsd:element name="productwholesaleprice" type="xsd:decimal" nillable="false"/>
+            <xsd:element name="productdiscountpercent" type="xsd:decimal" nillable="false"/>
+        </xsd:sequence>
+    </xsd:complexType>
+</xsd:schema>
+
+<!--
+    private Integer productid;
+    private String homesidbid;
+    private String servesidbid;
+    private String rateperiodclassificationid;
+    private String effectivedate;
+    private String enddate;
+    private BigDecimal productwholesaleprice;
+    private BigDecimal productdiscountpercent;
+    private String dummy;
+-->

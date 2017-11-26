@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://eu.squadd/connectors/wholesaleBooking"
+            xmlns:tns="http://eu.squadd/connectors/wholesaleBooking"
+            elementFormDefault="qualified">
+    
+    <xsd:complexType name="UnbilledCsvFileDTO">
+        <xsd:sequence>
+            <xsd:element name="homeSbid" type="xsd:string" nillable="false"/>
+            <xsd:element name="servingSbid" type="xsd:string" nillable="false"/>
+            <xsd:element name="messageSource" type="xsd:string" nillable="false"/>
+            <xsd:element name="airProdId" type="xsd:integer" nillable="false"/>
+            <xsd:element name="wholesalePeakAirCharge" type="xsd:double" nillable="false"/>
+            <xsd:element name="wholesaleOffpeakAirCharge" type="xsd:double" nillable="false"/>
+            <xsd:element name="source" type="xsd:string" nillable="false"/>
+            <xsd:element name="financialMarket" type="xsd:string" nillable="false"/>
+            <xsd:element name="airBillSeconds" type="xsd:long" nillable="false"/>
+            <xsd:element name="totalWholesaleUsage" type="xsd:long" nillable="false"/>
+            <xsd:element name="debitcreditindicator" type="xsd:string" nillable="false"/>
+        </xsd:sequence>
+    </xsd:complexType>
+</xsd:schema>
+
+
+<!--
+    private String homeSbid;
+    private String servingSbid;
+    private String messageSource;
+    private Integer airProdId;
+    private Double wholesalePeakAirCharge;
+    private Double wholesaleOffpeakAirCharge;
+    private String source;
+    private String financialMarket;
+    private Long airBillSeconds;
+    private Long totalWholesaleUsage;
+    private String debitcreditindicator;
+-->

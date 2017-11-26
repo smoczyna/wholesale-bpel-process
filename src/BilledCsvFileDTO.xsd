@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://eu.squadd/connectors/wholesaleBooking"
+            xmlns:tns="http://eu.squadd/connectors/wholesaleBooking"
+            elementFormDefault="qualified">
+    
+    <xsd:complexType name="BilledCsvFileDTO">
+        <xsd:sequence>
+            <xsd:element name="homeSbid" type="xsd:string" nillable="false"/>
+            <xsd:element name="servingSbid" type="xsd:string" nillable="false"/>
+            <xsd:element name="messageSource" type="xsd:string" nillable="false"/>
+            <xsd:element name="incompleteInd" type="xsd:string" nillable="false"/>            
+            <xsd:element name="airProdId" type="xsd:integer" nillable="false"/>
+            <xsd:element name="incompleteProdId" type="xsd:integer" nillable="false"/>            
+            <xsd:element name="incompleteCallSurcharge" type="xsd:double" nillable="false"/>
+            <xsd:element name="airSurchargeProductId" type="xsd:integer" nillable="false"/>
+            <xsd:element name="airSurcharge" type="xsd:double" nillable="false"/>
+            <xsd:element name="interExchangeCarrierCode" type="xsd:integer" nillable="false"/>
+            <xsd:element name="tollProductId" type="xsd:integer" nillable="false"/>
+            <xsd:element name="tollCharge" type="xsd:double" nillable="false"/>            
+            <xsd:element name="tollSurchargeProductId" type="xsd:integer" nillable="false"/>
+            <xsd:element name="tollSurcharge" type="xsd:double" nillable="false"/>
+            <xsd:element name="tollStateTax" type="xsd:double" nillable="false"/>
+            <xsd:element name="tollLocalTax" type="xsd:double" nillable="false"/>
+            <xsd:element name="localAirTax" type="xsd:double" nillable="false"/>
+            <xsd:element name="stateAirTax" type="xsd:double" nillable="false"/>        
+            <xsd:element name="wholesalePeakAirCharge" type="xsd:double" nillable="false"/>
+            <xsd:element name="wholesaleOffPeakAirCharge" type="xsd:double" nillable="false"/>
+            <xsd:element name="wholesaleTollChargeLDPeak" type="xsd:double" nillable="false"/>
+            <xsd:element name="wholesaleTollChargeLDOther" type="xsd:double" nillable="false"/>            
+            <xsd:element name="space" type="xsd:string" nillable="false"/>
+            <xsd:element name="financialMarket" type="xsd:string" nillable="false"/>
+            <xsd:element name="deviceType" type="xsd:string" nillable="false"/>
+            <xsd:element name="airBillSeconds" type="xsd:long" nillable="false"/>
+            <xsd:element name="tollBillSeconds" type="xsd:long" nillable="false"/>
+            <xsd:element name="wholesaleUsageBytes" type="xsd:long" nillable="false"/>
+            <xsd:element name="debitcreditindicator" type="xsd:string" nillable="false"/>
+        </xsd:sequence>
+    </xsd:complexType>
+</xsd:schema>
+
+<!--
+    private String homeSbid;
+    private String servingSbid;
+    private String messageSource;
+    private String incompleteInd;
+    private Integer airProdId;
+    private Integer incompleteProdId;    
+    private Double incompleteCallSurcharge;
+    private Integer airSurchargeProductId;
+    private Double airSurcharge;
+    private Integer interExchangeCarrierCode;
+    private Integer tollProductId;
+    private Double tollCharge;    
+    private Integer tollSurchargeProductId;
+    private Double tollSurcharge;
+    private Double tollStateTax;
+    private Double tollLocalTax;
+    private Double localAirTax;
+    private Double stateAirTax;    
+    private Double wholesalePeakAirCharge;
+    private Double wholesaleOffPeakAirCharge;
+    private Double wholesaleTollChargeLDPeak;
+    private Double wholesaleTollChargeLDOther;                   
+    private String space;
+    private String financialMarket;
+    private String deviceType;
+    private Long airBillSeconds;
+    private Long tollBillSeconds;
+    private Long wholesaleUsageBytes;
+    private String debitcreditindicator;
+-->

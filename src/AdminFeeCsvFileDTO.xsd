@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://eu.squadd/connectors/wholesaleBooking"
+            xmlns:tns="http://eu.squadd/connectors/wholesaleBooking"
+            elementFormDefault="qualified">
+    
+    <xsd:complexType name="AdminFeeCsvFileDTO">
+        <xsd:sequence>
+            <xsd:element name="sbid" type="xsd:string" nillable="false"/>
+            <xsd:element name="productId" type="xsd:integer" nillable="false"/>
+            <xsd:element name="adminChargeAmt" type="xsd:double" nillable="false"/>
+            <xsd:element name="adminCount" type="xsd:integer" nillable="false"/>
+            <xsd:element name="financialMarket" type="xsd:string" nillable="false"/>
+            <xsd:element name="debitcreditindicator" type="xsd:string" nillable="false"/>
+        </xsd:sequence>
+    </xsd:complexType>    
+</xsd:schema>
+
+<!--
+    private String sbid;
+    private Integer productId;
+    private Double adminChargeAmt;
+    private Integer adminCount;
+    private String financialMarket;
+    private String debitcreditindicator;
+-->

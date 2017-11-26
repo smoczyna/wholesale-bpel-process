@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://eu.squadd/connectors/wholesaleBooking"
+            xmlns:tns="http://eu.squadd/connectors/wholesaleBooking"
+            elementFormDefault="qualified">
+
+    <xsd:complexType name="WholesaleBookingReport">
+        <xsd:sequence>
+            <xsd:element name="cycleMonthYear" type="xsd:string" nillable="true"></xsd:element>
+            <xsd:element name="startDate" type="xsd:string" nillable="true"></xsd:element>
+            <xsd:element name="endDate" type="xsd:string" nillable="true"></xsd:element>
+            <xsd:element name="homeLegalEntity" type="xsd:string" nillable="true"></xsd:element>
+            <xsd:element name="servingLegalEntity" type="xsd:string" nillable="true"></xsd:element>
+            <xsd:element name="homeFinancialMarketId" type="xsd:string" nillable="true"></xsd:element>
+            <xsd:element name="servingFinancialMarketId" type="xsd:string" nillable="true"></xsd:element>
+            <xsd:element name="productDiscountOfferId" type="xsd:integer" nillable="true"></xsd:element>
+            <xsd:element name="contractTermId" type="xsd:short" nillable="true"></xsd:element>
+            <xsd:element name="peakDollarAmt" type="xsd:double" nillable="true"></xsd:element>
+            <xsd:element name="offpeakDollarAmt" type="xsd:double" nillable="true"></xsd:element>
+            <xsd:element name="voiceMinutes" type="xsd:integer" nillable="true"></xsd:element>
+            <xsd:element name="tollDollarsAmt" type="xsd:double" nillable="true"></xsd:element>
+            <xsd:element name="tollMinutes" type="xsd:integer" nillable="true"></xsd:element>
+            <xsd:element name="dollarAmt3G" type="xsd:double" nillable="true"></xsd:element>
+            <xsd:element name="usage3G" type="xsd:long" nillable="true"></xsd:element>
+            <xsd:element name="usage4G" type="xsd:long" nillable="true"></xsd:element>
+            <xsd:element name="dollarAmtOther" type="xsd:double" nillable="true"></xsd:element>
+            <xsd:element name="dbCrInd" type="xsd:string" nillable="true"></xsd:element>
+            <xsd:element name="billedInd" type="xsd:string" nillable="true"></xsd:element>            
+        </xsd:sequence>
+    </xsd:complexType>
+</xsd:schema>
+
+<!--
+    private String cycleMonthYear;
+    private String startDate;
+    private String endDate;
+    private String homeLegalEntity;
+    private String servingLegalEntity;
+    private String homeFinancialMarketId;
+    private String servingFinancialMarketId;
+   private Integer productDiscountOfferId;
+     private Short contractTermId;
+    private Double peakDollarAmt;
+    private Double offpeakDollarAmt;
+   private Integer voiceMinutes;
+    private Double tollDollarsAmt;
+   private Integer tollMinutes;
+    private Double dollarAmt3G;
+      private Long usage3G;
+    private Double dollarAmt4G;
+      private Long usage4G;
+    private Double dollarAmtOther;
+    private String dbCrInd;
+    private String billedInd;
+
+-->

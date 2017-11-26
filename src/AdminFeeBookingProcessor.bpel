@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<process
+    name="AdminFeeBookingProcessor"
+    targetNamespace="http://enterprise.netbeans.org/bpel/WholesaleBookingProcessor-BPEL/wholesaleBookingProcessor-BPEL"
+    xmlns:tns="http://enterprise.netbeans.org/bpel/WholesaleBookingProcessor-BPEL/wholesaleBookingProcessor-BPEL"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" 
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2"
+    xmlns:sxat="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Attachment"
+    xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling" xmlns:ns0="http://eu.squadd/connectors/wholesaleBooking">
+    <import namespace="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/ReadAdminFeeRecordService" location="ReadAdminFeeRecordService.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/WriteWholesaleReportOutput" location="WriteWholesaleReportOutput.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://eu.squadd/connectors/wholesaleBooking" location="WholesaleReport.xsd" importType="http://www.w3.org/2001/XMLSchema"/>
+    <import namespace="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/GetWholesalePriceService" location="GetWholesalePriceService.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <partnerLinks>
+        <partnerLink name="GetWholesalePrice" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/GetWholesalePriceService" partnerLinkType="tns:GetWholesalePriceService" partnerRole="GetWholesalePriceServicePortTypeRole"/>
+        <partnerLink name="WriteWholesaleReportOuput" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/WriteWholesaleReportOutput" partnerLinkType="tns:WriteWholesaleReportOutput" partnerRole="WriteWholesaleReportOutputPortTypeRole"/>
+        <partnerLink name="ReadAdminFeeSource" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/ReadAdminFeeRecordService" partnerLinkType="tns:ReadAdminFeeRecordService" myRole="ReadAdminFeeRecordServicePortTypeRole"/>
+    </partnerLinks>
+    <variables>
+        <variable name="chargeAmt" type="xs:double"/>
+        <variable name="GetWholesalePriceServiceOperationOut" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/GetWholesalePriceService" messageType="tns:GetWholesalePriceServiceOperationResponse"/>
+        <variable name="GetWholesalePriceServiceOperationIn" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/GetWholesalePriceService" messageType="tns:GetWholesalePriceServiceOperationRequest"/>
+        <variable name="financialMarket" type="xs:string"/>
+        <variable name="priductId" type="xs:integer"/>
+        <variable name="searchHomeSbid" type="xs:string"/>
+        <variable name="fileSource" type="xs:string"/>
+        <variable name="WholesaleOutputReport" type="ns0:WholesaleBookingReport"/>
+        <variable name="WriteWholesaleReportOutputOperation" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/WriteWholesaleReportOutput" messageType="tns:WriteWholesaleReportOutputOperationRequest"/>
+        <variable name="ReadAdminFeeRecordServiceOperation" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/ReadAdminFeeRecordService" messageType="tns:ReadAdminFeeRecordServiceOperationRequest"/>
+    </variables>
+    <sequence>
+        <receive name="ReceiveInputRecord" createInstance="yes" partnerLink="ReadAdminFeeSource" operation="ReadAdminFeeRecordServiceOperation" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/ReadAdminFeeRecordService" portType="tns:ReadAdminFeeRecordServicePortType" variable="ReadAdminFeeRecordServiceOperation"/>
+        <assign name="AssignInput">
+            <copy>
+                <from>'Y'</from>
+                <to>$WriteWholesaleReportOutputOperation.wholesaleReportOutputRecord/ns0:billedInd</to>
+            </copy>
+            <copy>
+                <from>'M'</from>
+                <to variable="fileSource"/>
+            </copy>
+            <copy>
+                <from>$ReadAdminFeeRecordServiceOperation.admiFeeInputRecord/ns0:sbid</from>
+                <to variable="searchHomeSbid"/>
+            </copy>
+            <copy>
+                <from>$ReadAdminFeeRecordServiceOperation.admiFeeInputRecord/ns0:productId</from>
+                <to variable="priductId"/>
+            </copy>
+            <copy>
+                <from>$ReadAdminFeeRecordServiceOperation.admiFeeInputRecord/ns0:financialMarket</from>
+                <to variable="financialMarket"/>
+            </copy>
+        </assign>
+        <if name="IfFinEmpty">
+            <condition>string-length($ReadAdminFeeRecordServiceOperation.admiFeeInputRecord/ns0:financialMarket) = 0</condition>
+            <assign name="AssignDefaultFin">
+                <copy>
+                    <from>'003'</from>
+                    <to variable="financialMarket"/>
+                </copy>
+            </assign>
+        </if>
+        <assign name="AssignWholesalePriceCall">
+            <copy>
+                <from variable="priductId"/>
+                <to variable="GetWholesalePriceServiceOperationIn" part="productId"/>
+            </copy>
+            <copy>
+                <from variable="searchHomeSbid"/>
+                <to variable="GetWholesalePriceServiceOperationIn" part="sbid"/>
+            </copy>
+        </assign>
+        <invoke name="CallWholesalePrice" partnerLink="GetWholesalePrice" operation="GetWholesalePriceServiceOperation" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/GetWholesalePriceService" portType="tns:GetWholesalePriceServicePortType" inputVariable="GetWholesalePriceServiceOperationIn" outputVariable="GetWholesalePriceServiceOperationOut"/>
+        <assign name="AdminFeeProcessor">
+            <copy>
+                <from>$GetWholesalePriceServiceOperationOut.wholesalePriceDbOutput/ns0:productwholesaleprice * $ReadAdminFeeRecordServiceOperation.admiFeeInputRecord/ns0:adminCount</from>
+                <to>$WriteWholesaleReportOutputOperation.wholesaleReportOutputRecord/ns0:dollarAmtOther</to>
+            </copy>
+        </assign>
+        <invoke name="WriteWholesaleOuput" partnerLink="WriteWholesaleReportOuput" operation="WriteWholesaleReportOutputOperation" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/WriteWholesaleReportOutput" portType="tns:WriteWholesaleReportOutputPortType" inputVariable="WriteWholesaleReportOutputOperation"/>
+    </sequence>
+</process>
