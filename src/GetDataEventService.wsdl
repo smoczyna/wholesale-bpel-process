@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions name="GetDataEventService" targetNamespace="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/GetDataEventService"
+    xmlns="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/GetDataEventService" xmlns:plnk="http://docs.oasis-open.org/wsbpel/2.0/plnktype" xmlns:ns0="http://eu.squadd/connectors/wholesaleBooking">
+    <types>
+        <xsd:schema targetNamespace="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/GetDataEventService">
+            <xsd:import namespace="http://eu.squadd/connectors/wholesaleBooking" schemaLocation="DataEventDAO.xsd"/>
+        </xsd:schema>
+    </types>
+    <message name="GetDataEventServiceOperationRequest">
+        <part name="productId" type="xsd:integer"/>
+    </message>
+    <message name="GetDataEventServiceOperationResponse">
+        <part name="dataEventDbOutput" type="ns0:DataEventDAO"/>
+    </message>
+    <portType name="GetDataEventServicePortType">
+        <operation name="GetDataEventServiceOperation">
+            <input name="input1" message="tns:GetDataEventServiceOperationRequest"/>
+            <output name="output1" message="tns:GetDataEventServiceOperationResponse"/>
+        </operation>
+    </portType>
+    <plnk:partnerLinkType name="GetDataEventService">
+        <!-- A partner link type is automatically generated when a new port type is added. Partner link types are used by BPEL processes. 
+In a BPEL process, a partner link represents the interaction between the BPEL process and a partner service. Each partner link is associated with a partner link type.
+A partner link type characterizes the conversational relationship between two services. The partner link type can have one or two roles.-->
+        <plnk:role name="GetDataEventServicePortTypeRole" portType="tns:GetDataEventServicePortType"/>
+    </plnk:partnerLinkType>
+</definitions>

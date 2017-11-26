@@ -5,7 +5,7 @@
             xmlns:tns="http://eu.squadd/connectors/wholesaleBooking"
             elementFormDefault="qualified">
     
-    <xsd:complexType name="BilledCsvFileDTO">
+    <xsd:complexType name="WholesalePriveDAO">
         <xsd:sequence>
             <xsd:element name="productid" type="xsd:integer" nillable="false"/>
             <xsd:element name="homesidbid" type="xsd:string" nillable="false"/>

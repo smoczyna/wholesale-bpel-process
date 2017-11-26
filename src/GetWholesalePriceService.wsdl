@@ -13,7 +13,7 @@
         <part name="sbid" type="xsd:string"/>
     </message>
     <message name="GetWholesalePriceServiceOperationResponse">
-        <part name="wholesalePriceDbOutput" type="ns:BilledCsvFileDTO"/>
+        <part name="wholesalePriceDbOutput" type="ns:WholesalePriveDAO"/>
     </message>
     <portType name="GetWholesalePriceServicePortType">
         <operation name="GetWholesalePriceServiceOperation">

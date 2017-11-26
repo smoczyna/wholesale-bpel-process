@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://eu.squadd/connectors/wholesaleBooking"
+            xmlns:tns="http://eu.squadd/connectors/wholesaleBooking"
+            elementFormDefault="qualified">
+    
+    <xsd:complexType name="DataEventDAO">
+        <xsd:sequence>
+            <xsd:element name="productid" type="xsd:integer" nillable="false"/>
+            
+            <xsd:element name="dataeventtype" type="xsd:string" nillable="false"/>
+            <xsd:element name="dataeventsubtype" type="xsd:string" nillable="false"/>
+            <xsd:element name="contentreporttype" type="xsd:string" nillable="false"/>
+            <xsd:element name="productbilllevelcode" type="xsd:string" nillable="false"/>
+            <xsd:element name="productbillfrequencycode" type="xsd:string" nillable="false"/>
+            <xsd:element name="contentcomponenttype" type="xsd:decimal" nillable="false"/>
+            <xsd:element name="contentrevenuesharetype" type="xsd:decimal" nillable="false"/>
+            <xsd:element name="billsectioncode" type="xsd:decimal" nillable="false"/>
+        </xsd:sequence>
+    </xsd:complexType>
+</xsd:schema>
+
+<!--
+    private Integer productid;
+    private String dataeventtype;
+    private String dataeventsubtype;
+    private String contentreporttype;
+    private String productbilllevelcode;
+    private String productbillfrequencycode;
+    private String contentcomponenttype;
+    private String contentrevenuesharetype;
+    private String billsectioncode;    
+    private String dummy;
+-->

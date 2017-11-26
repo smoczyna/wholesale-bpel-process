@@ -14,18 +14,22 @@
     <import namespace="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/WriteWholesaleReportOutput" location="WriteWholesaleReportOutput.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
     <import namespace="http://eu.squadd/connectors/wholesaleBooking" location="WholesaleReport.xsd" importType="http://www.w3.org/2001/XMLSchema"/>
     <import namespace="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/GetWholesalePriceService" location="GetWholesalePriceService.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/WriteDataErrorService" location="WriteDataErrorService.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
     <partnerLinks>
+        <partnerLink name="WriteBadDataService" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/WriteDataErrorService" partnerLinkType="tns:WriteDataErrorService" partnerRole="WriteDataErrorServicePortTypeRole"/>
         <partnerLink name="GetWholesalePrice" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/GetWholesalePriceService" partnerLinkType="tns:GetWholesalePriceService" partnerRole="GetWholesalePriceServicePortTypeRole"/>
         <partnerLink name="WriteWholesaleReportOuput" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/WriteWholesaleReportOutput" partnerLinkType="tns:WriteWholesaleReportOutput" partnerRole="WriteWholesaleReportOutputPortTypeRole"/>
         <partnerLink name="ReadAdminFeeSource" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/ReadAdminFeeRecordService" partnerLinkType="tns:ReadAdminFeeRecordService" myRole="ReadAdminFeeRecordServicePortTypeRole"/>
     </partnerLinks>
     <variables>
+        <variable name="WriteDataErrorServiceInput" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/WriteDataErrorService" messageType="tns:WriteDataErrorServiceOperationRequest"/>
+        <variable name="isEligibleForProcessing" type="xs:boolean"/>
         <variable name="chargeAmt" type="xs:double"/>
         <variable name="GetWholesalePriceServiceOperationOut" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/GetWholesalePriceService" messageType="tns:GetWholesalePriceServiceOperationResponse"/>
         <variable name="GetWholesalePriceServiceOperationIn" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/GetWholesalePriceService" messageType="tns:GetWholesalePriceServiceOperationRequest"/>
         <variable name="financialMarket" type="xs:string"/>
         <variable name="priductId" type="xs:integer"/>
-        <variable name="searchHomeSbid" type="xs:string"/>
+        <variable name="searchHomeSbid" type="xs:string"/>        
         <variable name="fileSource" type="xs:string"/>
         <variable name="WholesaleOutputReport" type="ns0:WholesaleBookingReport"/>
         <variable name="WriteWholesaleReportOutputOperation" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/WriteWholesaleReportOutput" messageType="tns:WriteWholesaleReportOutputOperationRequest"/>
@@ -33,6 +37,25 @@
     </variables>
     <sequence>
         <receive name="ReceiveInputRecord" createInstance="yes" partnerLink="ReadAdminFeeSource" operation="ReadAdminFeeRecordServiceOperation" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/ReadAdminFeeRecordService" portType="tns:ReadAdminFeeRecordServicePortType" variable="ReadAdminFeeRecordServiceOperation"/>
+        <assign name="ValidateInput">
+            <copy>
+                <from>$ReadAdminFeeRecordServiceOperation.admiFeeInputRecord/ns0:productId = 19182</from>
+                <to variable="isEligibleForProcessing"/>
+            </copy>
+        </assign>
+        <if name="IfBad">
+            <condition>not($isEligibleForProcessing)</condition>
+            <sequence name="Sequence1">
+                <assign name="AssignBadData">
+                    <copy>
+                        <from variable="ReadAdminFeeRecordServiceOperation" part="admiFeeInputRecord"/>
+                        <to variable="WriteDataErrorServiceInput" part="adminfee"/>
+                    </copy>
+                </assign>
+                <invoke name="WriteBadData" partnerLink="WriteBadDataService" operation="WriteDataErrorServiceOperation" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/WriteDataErrorService" portType="tns:WriteDataErrorServicePortType" inputVariable="WriteDataErrorServiceInput"/>
+                <exit name="SkipBadRecord"/>
+            </sequence>
+        </if>
         <assign name="AssignInput">
             <copy>
                 <from>'Y'</from>

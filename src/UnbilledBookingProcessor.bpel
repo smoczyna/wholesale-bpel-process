@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<process
+    name="UnbilledBookingProcessor"
+    targetNamespace="http://enterprise.netbeans.org/bpel/WholesaleBookingProcessor-BPEL/UnbilledBookingProcessor"
+    xmlns:tns="http://enterprise.netbeans.org/bpel/WholesaleBookingProcessor-BPEL/UnbilledBookingProcessor"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" 
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2"
+    xmlns:sxat="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Attachment"
+    xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling" xmlns:ns0="http://eu.squadd/connectors/wholesaleBooking">
+    <import namespace="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/ReadUnbilledRecordService" location="ReadUnbilledRecordService.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/WriteDataErrorService" location="WriteDataErrorService.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/WriteWholesaleReportOutput" location="WriteWholesaleReportOutput.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/GetDataEventService" location="GetDataEventService.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <partnerLinks>
+        <partnerLink name="WriteDataErrorService" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/WriteDataErrorService" partnerLinkType="tns:WriteDataErrorService" partnerRole="WriteDataErrorServicePortTypeRole"/>
+        <partnerLink name="GetDataEvent" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/GetDataEventService" partnerLinkType="tns:GetDataEventService" partnerRole="GetDataEventServicePortTypeRole"/>
+        <partnerLink name="WriteWholesaleReportService" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/WriteWholesaleReportOutput" partnerLinkType="tns:WriteWholesaleReportOutput" partnerRole="WriteWholesaleReportOutputPortTypeRole"/>
+        <partnerLink name="ReadUnbilledSource" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/ReadUnbilledRecordService" partnerLinkType="tns:ReadUnbilledRecordService" myRole="ReadUnbilledRecordServicePortTypeRole"/>
+    </partnerLinks>
+    <variables>
+        <variable name="GetDataEventOutput" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/GetDataEventService" messageType="tns:GetDataEventServiceOperationResponse"/>
+        <variable name="GetDataEventInput" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/GetDataEventService" messageType="tns:GetDataEventServiceOperationRequest"/>
+        <variable name="chargeAmount" type="xs:double"/>
+        <variable name="WriteWholesaleReportOut" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/WriteWholesaleReportOutput" messageType="tns:WriteWholesaleReportOutputOperationRequest"/>
+        <variable name="WriteDataErrorServiceInput" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/WriteDataErrorService" messageType="tns:WriteDataErrorServiceOperationRequest"/>
+        <variable name="isEligibleForProcessing" type="xs:boolean"/>
+        <variable name="ReadUnbilledRecordServiceOperation" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/ReadUnbilledRecordService" messageType="tns:ReadUnbilledRecordServiceOperationRequest"/>
+        <variable name="financialMarket" type="xs:string"/>
+        <variable name="priductId" type="xs:integer"/>
+        <variable name="searchHomeSbid" type="xs:string"/>
+        <variable name="searchServingSbid" type="xs:string"/>
+        <variable name="fileSource" type="xs:string"/>
+    </variables>
+    <sequence>
+        <receive name="ReceiveUnbilledInputRecord" createInstance="yes" partnerLink="ReadUnbilledSource" operation="ReadUnbilledRecordServiceOperation" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/ReadUnbilledRecordService" portType="tns:ReadUnbilledRecordServicePortType" variable="ReadUnbilledRecordServiceOperation"/>
+        <assign name="ValidateInput">
+            <copy>
+                <from>$ReadUnbilledRecordServiceOperation.unbilledInputRecord/ns0:airProdId &gt; 0 and ($ReadUnbilledRecordServiceOperation.unbilledInputRecord/ns0:wholesalePeakAirCharge &gt; 0 or $ReadUnbilledRecordServiceOperation.unbilledInputRecord/ns0:wholesaleOffpeakAirCharge &gt; 0)</from>
+                <to variable="isEligibleForProcessing"/>
+            </copy>
+        </assign>
+        <if name="IfBad">
+            <condition>not($isEligibleForProcessing)</condition>
+            <sequence name="Sequence1">
+                <assign name="AssignBadData">
+                    <copy>
+                        <from variable="ReadUnbilledRecordServiceOperation" part="unbilledInputRecord"/>
+                        <to variable="WriteDataErrorServiceInput" part="unbilled"/>
+                    </copy>
+                </assign>
+                <invoke name="WriteToBadData" partnerLink="WriteDataErrorService" operation="WriteDataErrorServiceOperation" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/WriteDataErrorService" portType="tns:WriteDataErrorServicePortType" inputVariable="WriteDataErrorServiceInput"/>
+                <exit name="SkipBadRecord"/>
+            </sequence>
+        </if>
+        <assign name="AssignInput">
+            <copy>
+                <from>$ReadUnbilledRecordServiceOperation.unbilledInputRecord/ns0:homeSbid</from>
+                <to variable="searchHomeSbid"/>
+            </copy>
+            <copy>
+                <from>$ReadUnbilledRecordServiceOperation.unbilledInputRecord/ns0:servingSbid</from>
+                <to variable="searchServingSbid"/>
+            </copy>
+            <copy>
+                <from>'U'</from>
+                <to variable="fileSource"/>
+            </copy>
+            <copy>
+                <from>$ReadUnbilledRecordServiceOperation.unbilledInputRecord/ns0:financialMarket</from>
+                <to variable="financialMarket"/>
+            </copy>
+            <copy>
+                <from>'N'</from>
+                <to>$WriteWholesaleReportOut.wholesaleReportOutputRecord/ns0:billedInd</to>
+            </copy>
+            <copy>
+                <from>$ReadUnbilledRecordServiceOperation.unbilledInputRecord/ns0:wholesalePeakAirCharge + $ReadUnbilledRecordServiceOperation.unbilledInputRecord/ns0:wholesaleOffpeakAirCharge</from>
+                <to variable="chargeAmount"/>
+            </copy>
+            <copy>
+                <from>$ReadUnbilledRecordServiceOperation.unbilledInputRecord/ns0:wholesaleOffpeakAirCharge</from>
+                <to>$WriteWholesaleReportOut.wholesaleReportOutputRecord/ns0:offpeakDollarAmt</to>
+            </copy>
+        </assign>
+        <if name="IfMessageSourceEmpty">
+            <condition>string-length($ReadUnbilledRecordServiceOperation.unbilledInputRecord/ns0:messageSource) = 0</condition>
+            <assign name="AssignReport">
+                <copy>
+                    <from>$ReadUnbilledRecordServiceOperation.unbilledInputRecord/ns0:wholesalePeakAirCharge</from>
+                    <to>$WriteWholesaleReportOut.wholesaleReportOutputRecord/ns0:peakDollarAmt</to>
+                </copy>
+                <copy>
+                    <from>0</from>
+                    <to>$WriteWholesaleReportOut.wholesaleReportOutputRecord/ns0:dollarAmtOther</to>
+                </copy>
+                <copy>
+                    <from>$ReadUnbilledRecordServiceOperation.unbilledInputRecord/ns0:airBillSeconds div 60</from>
+                    <to>$WriteWholesaleReportOut.wholesaleReportOutputRecord/ns0:voiceMinutes</to>
+                </copy>
+            </assign>
+            <elseif>
+                <condition>$ReadUnbilledRecordServiceOperation.unbilledInputRecord/ns0:messageSource = 'D'</condition>
+                <sequence name="Sequence2">
+                    <assign name="AssignReport2">
+                        <copy>
+                                <from>$ReadUnbilledRecordServiceOperation.unbilledInputRecord/ns0:wholesalePeakAirCharge</from>
+                                    <to>$WriteWholesaleReportOut.wholesaleReportOutputRecord/ns0:dollarAmtOther</to>
+                            </copy>
+                            <copy>
+                                <from>0</from>
+                                    <to>$WriteWholesaleReportOut.wholesaleReportOutputRecord/ns0:peakDollarAmt</to>
+                            </copy>
+                        <copy>
+                            <from>$ReadUnbilledRecordServiceOperation.unbilledInputRecord/ns0:airProdId</from>
+                            <to variable="GetDataEventInput" part="productId"/>
+                        </copy>
+                    </assign>
+                    <invoke name="CallDataEvent" partnerLink="GetDataEvent" operation="GetDataEventServiceOperation" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/GetDataEventService" portType="tns:GetDataEventServicePortType" inputVariable="GetDataEventInput" outputVariable="GetDataEventOutput"/>
+                    <if name="If3G">
+                        <condition>$GetDataEventOutput.dataEventDbOutput/ns0:dataeventsubtype = 'DEFLT'</condition>
+                        <assign name="Assign3G">
+                            <copy>
+                                <from>$ReadUnbilledRecordServiceOperation.unbilledInputRecord/ns0:totalWholesaleUsage div 1024</from>
+                                <to>$WriteWholesaleReportOut.wholesaleReportOutputRecord/ns0:usage3G</to>
+                            </copy>
+                            <copy>
+                                <from variable="chargeAmount"/>
+                                <to>$WriteWholesaleReportOut.wholesaleReportOutputRecord/ns0:dollarAmt3G</to>
+                            </copy>
+                        </assign>
+                        <elseif>
+                            <condition>$GetDataEventOutput.dataEventDbOutput/ns0:dataeventsubtype = 'DEF4G'</condition>
+                            <assign name="Assign4G">
+                                <copy>
+                                    <from>$ReadUnbilledRecordServiceOperation.unbilledInputRecord/ns0:airBillSeconds div 1024</from>
+                                    <to>$WriteWholesaleReportOut.wholesaleReportOutputRecord/ns0:usage4G</to>
+                                </copy>
+                                <copy>
+                                    <from variable="chargeAmount"/>
+                                    <to>$WriteWholesaleReportOut.wholesaleReportOutputRecord/ns0:dollarAmt4G;</to>
+                                </copy>
+                            </assign>
+                        </elseif>
+                    </if>
+                </sequence>
+            </elseif>
+        </if>
+        <invoke name="WriteWholesaleREport" partnerLink="WriteWholesaleReportService" operation="WriteWholesaleReportOutputOperation" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/WriteWholesaleReportOutput" portType="tns:WriteWholesaleReportOutputPortType" inputVariable="WriteWholesaleReportOut"/>
+    </sequence>
+</process>
