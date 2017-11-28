@@ -107,7 +107,7 @@
                 </assign>
             </else>
         </if>
-        <if name="If2">
+        <if name="IfSbidsEqual">
             <condition>$searchHomeSbid = $searchServingSbid</condition>
             <assign name="AssignHomeEqualsServing">
                 <copy>
