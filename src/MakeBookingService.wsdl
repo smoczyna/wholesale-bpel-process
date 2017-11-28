@@ -15,7 +15,8 @@
         <part name="bookingInput" type="ns:makeBookingInputType"/>
     </message>
     <message name="MakeBookingServiceOperationResponse">
-        <part name="bookingResult" type="xsd:string"/>
+        <part name="bookingResult" type="xsd:boolean"/>
+        <part name="responseMessage" type="xsd:string"/>
     </message>
     <message name="MakeBookingServiceOperationFault">
         <part name="bookingFault" type="xsd:string"/>

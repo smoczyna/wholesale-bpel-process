@@ -37,6 +37,7 @@
             <xsd:element name="chargeAmount" type="xsd:double"></xsd:element>
             <xsd:element name="fileSource" type="xsd:string"></xsd:element>
             <xsd:element name="homeEqualsServingSbid" type="xsd:boolean"></xsd:element>
+            <xsd:element name="financialMarket" type="xsd:string"></xsd:element>
         </xsd:sequence>
     </xsd:complexType>
     <xsd:complexType name="SummarySubledgerOutputRecord">        

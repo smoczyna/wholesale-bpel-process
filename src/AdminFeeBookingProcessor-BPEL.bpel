@@ -15,23 +15,26 @@
     <import namespace="http://eu.squadd/connectors/wholesaleBooking" location="WholesaleReport.xsd" importType="http://www.w3.org/2001/XMLSchema"/>
     <import namespace="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/GetWholesalePriceService" location="GetWholesalePriceService.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
     <import namespace="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/WriteDataErrorService" location="WriteDataErrorService.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/MakeBookingService" location="MakeBookingService.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
     <partnerLinks>
         <partnerLink name="WriteBadDataService" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/WriteDataErrorService" partnerLinkType="tns:WriteDataErrorService" partnerRole="WriteDataErrorServicePortTypeRole"/>
         <partnerLink name="GetWholesalePrice" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/GetWholesalePriceService" partnerLinkType="tns:GetWholesalePriceService" partnerRole="GetWholesalePriceServicePortTypeRole"/>
+        <partnerLink name="MakeBookingService" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/MakeBookingService" partnerLinkType="tns:MakeBookingService" partnerRole="MakeBookingServicePortTypeRole"/>
         <partnerLink name="WriteWholesaleReportOuput" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/WriteWholesaleReportOutput" partnerLinkType="tns:WriteWholesaleReportOutput" partnerRole="WriteWholesaleReportOutputPortTypeRole"/>
         <partnerLink name="ReadAdminFeeSource" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/ReadAdminFeeRecordService" partnerLinkType="tns:ReadAdminFeeRecordService" myRole="ReadAdminFeeRecordServicePortTypeRole"/>
     </partnerLinks>
     <variables>
+        <variable name="MakeBookingOutput" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/MakeBookingService" messageType="tns:MakeBookingServiceOperationResponse"/>
+        <variable name="MakeBookingInput" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/MakeBookingService" messageType="tns:MakeBookingServiceOperationRequest"/>
+        <variable name="chargeAmount" type="xs:double"/>
         <variable name="WriteDataErrorServiceInput" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/WriteDataErrorService" messageType="tns:WriteDataErrorServiceOperationRequest"/>
         <variable name="isEligibleForProcessing" type="xs:boolean"/>
-        <variable name="chargeAmt" type="xs:double"/>
         <variable name="GetWholesalePriceServiceOperationOut" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/GetWholesalePriceService" messageType="tns:GetWholesalePriceServiceOperationResponse"/>
         <variable name="GetWholesalePriceServiceOperationIn" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/GetWholesalePriceService" messageType="tns:GetWholesalePriceServiceOperationRequest"/>
         <variable name="financialMarket" type="xs:string"/>
         <variable name="priductId" type="xs:integer"/>
         <variable name="searchHomeSbid" type="xs:string"/>        
         <variable name="fileSource" type="xs:string"/>
-        <variable name="WholesaleOutputReport" type="ns0:WholesaleBookingReport"/>
         <variable name="WriteWholesaleReportOutputOperation" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/WriteWholesaleReportOutput" messageType="tns:WriteWholesaleReportOutputOperationRequest"/>
         <variable name="ReadAdminFeeRecordServiceOperation" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/ReadAdminFeeRecordService" messageType="tns:ReadAdminFeeRecordServiceOperationRequest"/>
     </variables>
@@ -98,12 +101,46 @@
             </copy>
         </assign>
         <invoke name="CallWholesalePrice" partnerLink="GetWholesalePrice" operation="GetWholesalePriceServiceOperation" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/GetWholesalePriceService" portType="tns:GetWholesalePriceServicePortType" inputVariable="GetWholesalePriceServiceOperationIn" outputVariable="GetWholesalePriceServiceOperationOut"/>
-        <assign name="AdminFeeProcessor">
+        <assign name="AssignCharge">            
             <copy>
                 <from>$GetWholesalePriceServiceOperationOut.wholesalePriceDbOutput/ns0:productwholesaleprice * $ReadAdminFeeRecordServiceOperation.admiFeeInputRecord/ns0:adminCount</from>
-                <to>$WriteWholesaleReportOutputOperation.wholesaleReportOutputRecord/ns0:dollarAmtOther</to>
+                <to variable="chargeAmount"/>
             </copy>
         </assign>
-        <invoke name="WriteWholesaleOuput" partnerLink="WriteWholesaleReportOuput" operation="WriteWholesaleReportOutputOperation" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/WriteWholesaleReportOutput" portType="tns:WriteWholesaleReportOutputPortType" inputVariable="WriteWholesaleReportOutputOperation"/>
+        <assign name="AssignBookingCall">
+            <copy>
+                <from variable="ReadAdminFeeRecordServiceOperation" part="admiFeeInputRecord"/>
+                <to>$MakeBookingInput.bookingInput/ns0:adminfeeBookingInputRecord</to>
+            </copy>
+            <copy>
+                <from>0</from>
+                <to>$MakeBookingInput.bookingInput/ns0:interExchangeCarrierCode</to>
+            </copy>
+            <copy>
+                <from variable="priductId"/>
+                <to>$MakeBookingInput.bookingInput/ns0:productId</to>
+            </copy>
+            <copy>
+                <from variable="chargeAmount"/>
+                <to>$MakeBookingInput.bookingInput/ns0:chargeAmount</to>
+            </copy>
+            <copy>
+                <from variable="fileSource"/>
+                <to>$MakeBookingInput.bookingInput/ns0:fileSource</to>
+            </copy>
+            <copy>
+                <from>true()</from>
+                <to>$MakeBookingInput.bookingInput/ns0:homeEqualsServingSbid</to>
+            </copy>
+            <copy>
+                <from variable="financialMarket"/>
+                <to>$MakeBookingInput.bookingInput/ns0:financialMarket</to>
+            </copy>
+        </assign>
+        <invoke name="InvokeMakeBooking" partnerLink="MakeBookingService" operation="MakeBookingServiceOperation" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/MakeBookingService" portType="tns:MakeBookingServicePortType" inputVariable="MakeBookingInput" outputVariable="MakeBookingOutput"/>
+        <if name="IfBookingSuccessul">
+            <condition>$MakeBookingOutput.bookingResult</condition>
+            <invoke name="WriteWholesaleOuput" partnerLink="WriteWholesaleReportOuput" operation="WriteWholesaleReportOutputOperation" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/WriteWholesaleReportOutput" portType="tns:WriteWholesaleReportOutputPortType" inputVariable="WriteWholesaleReportOutputOperation"/>
+        </if>
     </sequence>
 </process>

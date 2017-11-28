@@ -103,16 +103,16 @@
             </assign>
             <elseif>
                 <condition>$ReadUnbilledRecordServiceOperation.unbilledInputRecord/ns0:messageSource = 'D'</condition>
-                <sequence name="Sequence2">
+                <sequence name="DataUsageSequence">
                     <assign name="AssignReport2">
                         <copy>
-                                <from>$ReadUnbilledRecordServiceOperation.unbilledInputRecord/ns0:wholesalePeakAirCharge</from>
-                                    <to>$WriteWholesaleReportOut.wholesaleReportOutputRecord/ns0:dollarAmtOther</to>
-                            </copy>
-                            <copy>
-                                <from>0</from>
-                                    <to>$WriteWholesaleReportOut.wholesaleReportOutputRecord/ns0:peakDollarAmt</to>
-                            </copy>
+                            <from>$ReadUnbilledRecordServiceOperation.unbilledInputRecord/ns0:wholesalePeakAirCharge</from>
+                            <to>$WriteWholesaleReportOut.wholesaleReportOutputRecord/ns0:dollarAmtOther</to>
+                        </copy>
+                        <copy>
+                            <from>0</from>
+                            <to>$WriteWholesaleReportOut.wholesaleReportOutputRecord/ns0:peakDollarAmt</to>
+                        </copy>
                         <copy>
                             <from>$ReadUnbilledRecordServiceOperation.unbilledInputRecord/ns0:airProdId</from>
                             <to variable="GetDataEventInput" part="productId"/>
@@ -140,7 +140,7 @@
                                 </copy>
                                 <copy>
                                     <from variable="chargeAmount"/>
-                                    <to>$WriteWholesaleReportOut.wholesaleReportOutputRecord/ns0:dollarAmt4G;</to>
+                                    <to>$WriteWholesaleReportOut.wholesaleReportOutputRecord/ns0:dollarAmt4G</to>
                                 </copy>
                             </assign>
                         </elseif>

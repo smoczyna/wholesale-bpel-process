@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions name="GetBookingDatesService" targetNamespace="http://j2ee.netbeans.org/wsdl/wholesale-bpel-process/src/GetBookingDatesService"
+    xmlns="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://j2ee.netbeans.org/wsdl/wholesale-bpel-process/src/GetBookingDatesService" xmlns:plnk="http://docs.oasis-open.org/wsbpel/2.0/plnktype" xmlns:ns0="http://eu.squadd/connectors/wholesaleBooking">
+    <types>
+        <xsd:schema targetNamespace="http://j2ee.netbeans.org/wsdl/wholesale-bpel-process/src/GetBookingDatesService">
+            <xsd:import namespace="http://eu.squadd/connectors/wholesaleBooking" schemaLocation="BookingDatesDTO.xsd"/>
+        </xsd:schema>
+    </types>
+    <message name="GetBookingDatesServiceOperationRequest"></message>
+    <message name="GetBookingDatesServiceOperationResponse">
+        <part name="response" type="ns0:BookingDatesDTO"/>
+    </message>
+    <portType name="GetBookingDatesServicePortType">
+        <operation name="GetBookingDatesServiceOperation">
+            <input name="input1" message="tns:GetBookingDatesServiceOperationRequest"/>
+            <output name="output1" message="tns:GetBookingDatesServiceOperationResponse"/>
+        </operation>
+    </portType>
+    <plnk:partnerLinkType name="GetBookingDatesService">
+        <!-- A partner link type is automatically generated when a new port type is added. Partner link types are used by BPEL processes. 
+In a BPEL process, a partner link represents the interaction between the BPEL process and a partner service. Each partner link is associated with a partner link type.
+A partner link type characterizes the conversational relationship between two services. The partner link type can have one or two roles.-->
+        <plnk:role name="GetBookingDatesServicePortTypeRole" portType="tns:GetBookingDatesServicePortType"/>
+    </plnk:partnerLinkType>
+</definitions>

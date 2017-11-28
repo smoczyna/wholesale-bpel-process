@@ -23,7 +23,7 @@
             <xsd:element name="tollMinutes" type="xsd:integer" nillable="true"></xsd:element>
             <xsd:element name="dollarAmt3G" type="xsd:double" nillable="true"></xsd:element>
             <xsd:element name="usage3G" type="xsd:long" nillable="true"></xsd:element>
-            <xsd:element name="dollarAmt4G;" type="xsd:double" nillable="true"></xsd:element>
+            <xsd:element name="dollarAmt4G" type="xsd:double" nillable="true"></xsd:element>
             <xsd:element name="usage4G" type="xsd:long" nillable="true"></xsd:element>
             <xsd:element name="dollarAmtOther" type="xsd:double" nillable="true"></xsd:element>
             <xsd:element name="dbCrInd" type="xsd:string" nillable="true"></xsd:element>

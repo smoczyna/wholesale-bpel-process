@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://eu.squadd/connectors/wholesaleBooking"
+            xmlns:tns="http://eu.squadd/connectors/wholesaleBooking"
+            elementFormDefault="qualified">
+    
+    <xsd:complexType name="AltBookingDTO">
+        <xsd:sequence>
+            <xsd:element name="sbid" type="xsd:string" nillable="false"/>
+            <xsd:element name="altBookType" type="xsd:string" nillable="false"/>
+            <xsd:element name="glMarketId" type="xsd:string" nillable="false"/>
+            <xsd:element name="legalEntityId" type="xsd:string" nillable="false"/>
+            <xsd:element name="glMktMapTyp" type="xsd:string" nillable="false"/>
+        </xsd:sequence>
+    </xsd:complexType>    
+</xsd:schema>

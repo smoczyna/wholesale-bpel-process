@@ -9,31 +9,52 @@
     xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" 
     xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2"
     xmlns:sxat="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Attachment"
-    xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling" xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions" xmlns:ns0="http://eu.squadd/connectors/wholesaleBooking">
+    xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling" xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions" xmlns:ns0="http://eu.squadd/connectors/wholesaleBooking" xmlns:ns1="java://com.vzw.booking.processing.DateTimeTransformations">
     <import namespace="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/MakeBookingService" location="MakeBookingService.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
     <import namespace="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/GetFinEventCategoryService" location="GetFinEventCategoryService.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
     <import namespace="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/WriteSubledgerOouput" location="WriteSubledgerOutput.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
     <import namespace="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/GetFinCatOffsetService" location="GetFinCatOffsetService.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://j2ee.netbeans.org/wsdl/wholesale-bpel-process/src/GetAltBookingService" location="GetAltBookingService.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://j2ee.netbeans.org/wsdl/wholesale-bpel-process/src/GetBookingDatesService" location="GetBookingDatesService.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
     <partnerLinks>
+        <partnerLink name="AltBookingService" xmlns:tns="http://j2ee.netbeans.org/wsdl/wholesale-bpel-process/src/GetAltBookingService" partnerLinkType="tns:GetAltBookingService" partnerRole="GetAltBookingServicePortTypeRole"/>
         <partnerLink name="FinancialEventCategoryService" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/GetFinEventCategoryService" partnerLinkType="tns:GetFinEventCategoryService" partnerRole="GetFinEventCategoryServicePortTypeRole"/>
+        <partnerLink name="BookingDatesService" xmlns:tns="http://j2ee.netbeans.org/wsdl/wholesale-bpel-process/src/GetBookingDatesService" partnerLinkType="tns:GetBookingDatesService" partnerRole="GetBookingDatesServicePortTypeRole"/>
         <partnerLink name="FinCatOffsetService" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/GetFinCatOffsetService" partnerLinkType="tns:GetFinCatOffsetService" partnerRole="GetFinCatOffsetServicePortTypeRole"/>
         <partnerLink name="WriteSubledger" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/WriteSubledgerOouput" partnerLinkType="tns:WriteSubledgerOouput" partnerRole="WriteSubledgerOouputPortTypeRole"/>
         <partnerLink name="MakeBookingInput" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/MakeBookingService" partnerLinkType="tns:MakeBookingService" myRole="MakeBookingServicePortTypeRole"/>
     </partnerLinks>
     <variables>
+        <variable name="searchServingSbid" type="xs:string"/>
+        <variable name="searchHomeSbid" type="xs:string"/>
+        <variable name="homeEqualsServiceSbidIndicator" type="xs:string"/>
+        <variable name="FaultResponse" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/MakeBookingService" messageType="tns:MakeBookingServiceOperationFault"/>
         <variable name="GetFinCatOffsetOut" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/GetFinCatOffsetService" messageType="tns:GetFinCatOffsetServiceOperationResponse"/>
         <variable name="GetFinCatOffsetIn" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/GetFinCatOffsetService" messageType="tns:GetFinCatOffsetServiceOperationRequest"/>
         <variable name="WriteSubledgerOffsetOutputIn" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/WriteSubledgerOouput" messageType="tns:WriteSubledgerOutputOperationRequest"/>
         <variable name="WriteSubledgerOutputIn" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/WriteSubledgerOouput" messageType="tns:WriteSubledgerOutputOperationRequest"/>
         <variable name="MakeBookingResponse" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/MakeBookingService" messageType="tns:MakeBookingServiceOperationResponse"/>
         <variable name="bypassBooking" type="xs:boolean"/>
-        <variable name="debitCreditIndicator" type="xs:integer"/>
+        <variable name="debitCreditIndicator" type="xs:string"/>
         <variable name="GetFinEventCategoryOutput" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/GetFinEventCategoryService" messageType="tns:GetFinEventCategoryServiceOperationResponse"/>
         <variable name="GetFinEventCategoryInput" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/GetFinEventCategoryService" messageType="tns:GetFinEventCategoryServiceOperationRequest"/>
-        <variable name="homeEqualsServiceSbidIndicator" type="xs:string"/>
         <variable name="altBookingIndicator" type="xs:boolean"/>
         <variable name="MakeBookingServiceInput" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/MakeBookingService" messageType="tns:MakeBookingServiceOperationRequest"/>
+        <variable name="GetBookingDatesOutput" xmlns:tns="http://j2ee.netbeans.org/wsdl/wholesale-bpel-process/src/GetBookingDatesService" messageType="tns:GetBookingDatesServiceOperationResponse"/>
     </variables>
+    <faultHandlers>
+        <catchAll>
+            <sequence name="Sequence2">
+                <assign name="AssignFault">
+                    <copy>
+                        <from>'Record skipped due to processing error'</from>
+                        <to variable="FaultResponse" part="bookingFault"/>
+                    </copy>
+                </assign>
+                <reply name="FaultReply" partnerLink="MakeBookingInput" operation="MakeBookingServiceOperation" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/MakeBookingService" portType="tns:MakeBookingServicePortType" faultName="tns:fault" variable="FaultResponse"/>
+            </sequence>
+        </catchAll>
+    </faultHandlers>
     <sequence>
         <receive name="ReceiveMakeBookingInput" createInstance="yes" partnerLink="MakeBookingInput" operation="MakeBookingServiceOperation" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/MakeBookingService" portType="tns:MakeBookingServicePortType" variable="MakeBookingServiceInput"/>
         <assign name="InitBooking">
@@ -46,27 +67,140 @@
                 <to variable="homeEqualsServiceSbidIndicator"/>
             </copy>
         </assign>
-        <flow name="Flow1">
+        <flow name="PreBookingFlow">
             <if name="IfBilled">
                 <condition>count($MakeBookingServiceInput.bookingInput/ns0:billedBookingInputRecord) &gt; 0</condition>
+                <sequence name="AltBookingSequence">
                     <assign name="AssingBiiled">
-                        <copy>
-                            <from>$MakeBookingServiceInput.bookingInput/ns0:billedBookingInputRecord</from>
-                            <to variable="debitCreditIndicator"/>
-                        </copy>
                         <copy>
                             <from>$MakeBookingServiceInput.bookingInput/ns0:billedBookingInputRecord/ns0:debitcreditindicator</from>
                             <to variable="debitCreditIndicator"/>
                         </copy>
                     </assign>
+                    <scope name="AltBookingScope">
+                        <variables>
+                            <variable name="servingLegalEntityId" type="xs:string"/>
+                            <variable name="servingGlMarketId" type="xs:string"/>
+                            <variable name="homeLegalEntityId" type="xs:string"/>
+                            <variable name="homeGlMarketId" type="xs:string"/>
+                            <variable name="AltBookingResponse" type="xs:boolean"/>
+                            <variable name="GetAltBookingOutput" xmlns:tns="http://j2ee.netbeans.org/wsdl/wholesale-bpel-process/src/GetAltBookingService" messageType="tns:GetAltBookingServiceOperationResponse"/>
+                            <variable name="GetAltBookingInput" xmlns:tns="http://j2ee.netbeans.org/wsdl/wholesale-bpel-process/src/GetAltBookingService" messageType="tns:GetAltBookingServiceOperationRequest"/>
+                            <variable name="GetAltBooking3Output" xmlns:tns="http://j2ee.netbeans.org/wsdl/wholesale-bpel-process/src/GetAltBookingService" messageType="tns:GetAltBookingServiceOperationResponse"/>
+                            <variable name="GetAltBooking3Input" xmlns:tns="http://j2ee.netbeans.org/wsdl/wholesale-bpel-process/src/GetAltBookingService" messageType="tns:GetAltBookingServiceOperationRequest"/>
+                            <variable name="GetAltBooking2Output" xmlns:tns="http://j2ee.netbeans.org/wsdl/wholesale-bpel-process/src/GetAltBookingService" messageType="tns:GetAltBookingServiceOperationResponse"/>
+                            <variable name="GetAltBooking2Input" xmlns:tns="http://j2ee.netbeans.org/wsdl/wholesale-bpel-process/src/GetAltBookingService" messageType="tns:GetAltBookingServiceOperationRequest"/>
+                        </variables>
+                        <sequence name="AltBookingInnerSequence">
+                            <assign name="AssignInput">
+                                <copy>
+                                    <from variable="searchHomeSbid"/>
+                                    <to variable="GetAltBookingInput" part="homeSbid"/>
+                                </copy>
+                                <copy>
+                                    <from>''</from>
+                                    <to variable="servingGlMarketId"/>
+                                </copy>
+                                <copy>
+                                    <from>''</from>
+                                    <to variable="servingLegalEntityId"/>
+                                </copy>
+                                <copy>
+                                    <from>' '</from>
+                                    <to variable="homeLegalEntityId"/>
+                                </copy>
+                                <copy>
+                                    <from>' '</from>
+                                    <to variable="homeGlMarketId"/>
+                                </copy>
+                            </assign>
+                            <invoke name="InvokeAltBooking" partnerLink="AltBookingService" operation="GetAltBookingServiceOperation" xmlns:tns="http://j2ee.netbeans.org/wsdl/wholesale-bpel-process/src/GetAltBookingService" portType="tns:GetAltBookingServicePortType" inputVariable="GetAltBookingInput" outputVariable="GetAltBookingOutput"/>
+                            <if name="If1SbidsNotEqual">
+                                <condition>not($homeEqualsServiceSbidIndicator)</condition>
+                                <sequence name="AltBookingSequence2">
+                                    <if name="IfTypeIsP">
+                                        <condition>$GetAltBookingOutput.altBooingResponse/ns0:altBookType = 'P'</condition>
+                                        <sequence name="Sequence4">
+                                            <assign name="AssignSecondCall">
+                                                <copy>
+                                                    <from>$GetAltBookingOutput.altBooingResponse/ns0:legalEntityId</from>
+                                                    <to variable="homeLegalEntityId"/>
+                                                </copy>
+                                                <copy>
+                                                    <from variable="searchServingSbid"/>
+                                                    <to variable="GetAltBooking2Input" part="homeSbid"/>
+                                                </copy>
+                                            </assign>
+                                            <invoke name="InvokeAltBooking2" partnerLink="AltBookingService" operation="GetAltBookingServiceOperation" xmlns:tns="http://j2ee.netbeans.org/wsdl/wholesale-bpel-process/src/GetAltBookingService" portType="tns:GetAltBookingServicePortType" inputVariable="GetAltBooking2Input" outputVariable="GetAltBooking2Output"/>
+                                            <if name="IfTypeIsP2">
+                                                <condition>$GetAltBooking2Output.altBooingResponse/ns0:altBookType = 'P'</condition>
+                                                <assign name="Assign3">
+                                                    <copy>
+                                                        <from>$GetAltBooking2Output.altBooingResponse/ns0:legalEntityId</from>
+                                                        <to variable="servingLegalEntityId"/>
+                                                    </copy>
+                                                </assign>
+                                            </if>
+                                            <if name="IfEntitiesEqual">
+                                                <condition>$homeLegalEntityId = $servingLegalEntityId</condition>
+                                                <assign name="AssignResult1">
+                                                    <copy>
+                                                        <from>true()</from>
+                                                        <to variable="AltBookingResponse"/>
+                                                    </copy>
+                                                </assign>
+                                            </if>
+                                        </sequence>
+                                        <elseif>
+                                            <condition>$GetAltBookingOutput.altBooingResponse/ns0:altBookType = 'M'</condition>
+                                            <sequence name="Sequence5">
+                                                <assign name="AssignSecondCall2">
+                                                    <copy>
+                                                        <from variable="searchServingSbid"/>
+                                                        <to variable="GetAltBooking3Input" part="homeSbid"/>
+                                                    </copy>
+                                                    <copy>
+                                                        <from>$GetAltBookingOutput.altBooingResponse/ns0:glMarketId</from>
+                                                        <to variable="homeGlMarketId"/>
+                                                    </copy>
+                                                </assign>
+                                                <invoke name="InvokeAltBooking3" partnerLink="AltBookingService" operation="GetAltBookingServiceOperation" xmlns:tns="http://j2ee.netbeans.org/wsdl/wholesale-bpel-process/src/GetAltBookingService" portType="tns:GetAltBookingServicePortType" inputVariable="GetAltBooking3Input" outputVariable="GetAltBooking3Output"/>
+                                                <if name="IfTypeIsM2">
+                                                    <condition>$GetAltBooking3Output.altBooingResponse/ns0:altBookType = 'M'</condition>
+                                                    <assign name="Assign4">
+                                                        <copy>
+                                                            <from>$GetAltBooking3Output.altBooingResponse/ns0:glMarketId</from>
+                                                            <to variable="servingGlMarketId"/>
+                                                        </copy>
+                                                    </assign>
+                                                </if>
+                                                <if name="IfEntitiesEqual2">
+                                                    <condition>$homeGlMarketId = $servingGlMarketId</condition>
+                                                    <assign name="AssignResponse2">
+                                                        <copy>
+                                                            <from>true()</from>
+                                                            <to variable="AltBookingResponse"/>
+                                                        </copy>
+                                                    </assign>
+                                                </if>
+                                            </sequence>
+                                        </elseif>
+                                    </if>
+                                </sequence>
+                            </if>
+                            <assign name="AssignOutput">
+                                <copy>
+                                    <from variable="AltBookingResponse"/>
+                                    <to variable="altBookingIndicator"/>
+                                </copy>
+                            </assign>
+                        </sequence>
+                    </scope>
+                </sequence>
             </if>
             <if name="IfUnbilled">
                 <condition>count($MakeBookingServiceInput.bookingInput/ns0:unbilledBookingInputRecord) &gt; 0</condition>
                 <assign name="AssignUnbilled">
-                    <copy>
-                        <from>$MakeBookingServiceInput.bookingInput/ns0:unbilledBookingInputRecord/ns0:debitcreditindicator</from>
-                        <to variable="debitCreditIndicator"/>
-                    </copy>
                     <copy>
                         <from>$MakeBookingServiceInput.bookingInput/ns0:unbilledBookingInputRecord/ns0:debitcreditindicator</from>
                         <to variable="debitCreditIndicator"/>
@@ -76,10 +210,6 @@
             <if name="IfAdminFee">
                 <condition>count($MakeBookingServiceInput.bookingInput/ns0:adminfeeBookingInputRecord) &gt; 0</condition>
                 <assign name="AssignAdminFee">
-                    <copy>
-                        <from>$MakeBookingServiceInput.bookingInput/ns0:adminfeeBookingInputRecord</from>
-                        <to variable="debitCreditIndicator"/>
-                    </copy>
                     <copy>
                         <from>$MakeBookingServiceInput.bookingInput/ns0:adminfeeBookingInputRecord/ns0:debitcreditindicator</from>
                         <to variable="debitCreditIndicator"/>
@@ -194,14 +324,100 @@
         <if name="IfNoBypassBooking">
             <condition>not($bypassBooking) and $MakeBookingServiceInput.bookingInput/ns0:chargeAmount &gt; 0</condition>
             <sequence name="BookingSequence">
-                <flow name="Flow2">
+                <flow name="ChargeResolverFlow">
                     <if name="IfDR">
-                        <condition>$GetFinEventCategoryOutput.finEventCategoryOutput/ns0:financialeventnormalsign = 'DR' and $GetFinEventCategoryOutput.finEventCategoryOutput/ns0:debitcreditindicator = 'DR'</condition>
+                        <condition>$GetFinEventCategoryOutput.finEventCategoryOutput/ns0:financialeventnormalsign = 'DR' and $GetFinEventCategoryOutput.finEventCategoryOutput/ns0:debitcreditindicator = 'DR' and $GetFinEventCategoryOutput.finEventCategoryOutput/ns0:billingaccrualindicator = 'Y'</condition>
+                        <if name="IfChargePositive1">
+                            <condition>$MakeBookingServiceInput.bookingInput/ns0:chargeAmount &gt; 0</condition>
+                            <assign name="AssignPositiveCharge1">
+                                <copy>
+                                    <from>$MakeBookingServiceInput.bookingInput/ns0:chargeAmount</from>
+                                    <to>$WriteSubledgerOutputIn.subledger/ns0:subledgerTotalDebitAmount</to>
+                                </copy>
+                                <copy>
+                                    <from>0</from>
+                                    <to>$WriteSubledgerOutputIn.subledger/ns0:subledgerTotalCreditAmount</to>
+                                </copy>
+                            </assign>
+                            <else>
+                                <assign name="AssignNegativeCharge1">
+                                    <copy>
+                                        <from>$MakeBookingServiceInput.bookingInput/ns0:chargeAmount</from>
+                                        <to>$WriteSubledgerOutputIn.subledger/ns0:subledgerTotalCreditAmount</to>
+                                    </copy>
+                                    <copy>
+                                        <from>0</from>
+                                        <to>$WriteSubledgerOutputIn.subledger/ns0:subledgerTotalDebitAmount</to>
+                                    </copy>
+                                </assign>
+                            </else>
+                        </if>
                     </if>
                     <if name="IfCR">
-                        <condition>$GetFinEventCategoryOutput.finEventCategoryOutput/ns0:financialeventnormalsign = 'CR' and $GetFinEventCategoryOutput.finEventCategoryOutput/ns0:debitcreditindicator = 'CR'</condition>
+                        <condition>$GetFinEventCategoryOutput.finEventCategoryOutput/ns0:financialeventnormalsign = 'CR'</condition>
+                        <if name="IfCRIndicator">
+                            <condition>$GetFinEventCategoryOutput.finEventCategoryOutput/ns0:debitcreditindicator = 'CR'</condition>
+                            <sequence name="CRSequence1">
+                                <if name="IfChargePositive2">
+                                    <condition>$MakeBookingServiceInput.bookingInput/ns0:chargeAmount &gt; 0</condition>
+                                    <assign name="AssignPositiveCharge2">
+                                        <copy>
+                                            <from>$MakeBookingServiceInput.bookingInput/ns0:chargeAmount</from>
+                                            <to>$WriteSubledgerOutputIn.subledger/ns0:subledgerTotalCreditAmount</to>
+                                        </copy>
+                                        <copy>
+                                            <from>0</from>
+                                            <to>$WriteSubledgerOutputIn.subledger/ns0:subledgerTotalDebitAmount</to>
+                                        </copy>
+                                    </assign>
+                                    <else>
+                                        <assign name="AssignNegativeCharge2">
+                                            <copy>
+                                                <from>$MakeBookingServiceInput.bookingInput/ns0:chargeAmount</from>
+                                                <to>$WriteSubledgerOutputIn.subledger/ns0:subledgerTotalDebitAmount</to>
+                                            </copy>
+                                            <copy>
+                                                <from>0</from>
+                                                <to>$WriteSubledgerOutputIn.subledger/ns0:subledgerTotalCreditAmount</to>
+                                            </copy>
+                                        </assign>
+                                    </else>
+                                </if>
+                            </sequence>
+                            <elseif>
+                                <condition>$GetFinEventCategoryOutput.finEventCategoryOutput/ns0:debitcreditindicator = 'DR'</condition>
+                                <sequence name="CRSequence2">
+                                    <if name="IfChargePositive3">
+                                        <condition>$MakeBookingServiceInput.bookingInput/ns0:chargeAmount &gt; 0</condition>
+                                        <assign name="AssignPositiveCharge3">
+                                            <copy>
+                                                <from>$MakeBookingServiceInput.bookingInput/ns0:chargeAmount</from>
+                                                <to>$WriteSubledgerOutputIn.subledger/ns0:subledgerTotalDebitAmount</to>
+                                            </copy>
+                                            <copy>
+                                                <from>0</from>
+                                                <to>$WriteSubledgerOutputIn.subledger/ns0:subledgerTotalCreditAmount</to>
+                                            </copy>
+                                        </assign>
+                                        <else>
+                                            <assign name="AssignNegativeCharge3">
+                                                <copy>
+                                                    <from>$MakeBookingServiceInput.bookingInput/ns0:chargeAmount</from>
+                                                    <to>$WriteSubledgerOutputIn.subledger/ns0:subledgerTotalCreditAmount</to>
+                                                </copy>
+                                                <copy>
+                                                    <from>0</from>
+                                                    <to>$WriteSubledgerOutputIn.subledger/ns0:subledgerTotalDebitAmount</to>
+                                                </copy>
+                                            </assign>
+                                        </else>
+                                    </if>
+                                </sequence>
+                            </elseif>
+                        </if>
                     </if>
                 </flow>
+                <invoke name="InvokeBookingDates" partnerLink="BookingDatesService" operation="GetBookingDatesServiceOperation" xmlns:tns="http://j2ee.netbeans.org/wsdl/wholesale-bpel-process/src/GetBookingDatesService" portType="tns:GetBookingDatesServicePortType" outputVariable="GetBookingDatesOutput"/>
                 <assign name="AssignSubledger">
                     <copy>
                         <from>$GetFinEventCategoryOutput.finEventCategoryOutput/ns0:financialeventnumber</from>
@@ -214,6 +430,26 @@
                     <copy>
                         <from>$GetFinEventCategoryOutput.finEventCategoryOutput/ns0:financialeventnumber</from>
                         <to variable="GetFinCatOffsetIn" part="finCatIn"/>
+                    </copy>
+                    <copy>
+                        <from>$MakeBookingServiceInput.bookingInput/ns0:financialMarket</from>
+                        <to>$WriteSubledgerOutputIn.subledger/ns0:financialmarketId</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:current-dateTime()</from>
+                        <to>$WriteSubledgerOutputIn.subledger/ns0:updateTimestamp</to>
+                    </copy>
+                    <copy>
+                        <from>$GetBookingDatesOutput.response/ns0:rptPerStartDate</from>
+                        <to>$WriteSubledgerOutputIn.subledger/ns0:reportStartDate</to>
+                    </copy>
+                    <copy>
+                        <from>$GetBookingDatesOutput.response/ns0:transPerEndDate</from>
+                        <to>$WriteSubledgerOutputIn.subledger/ns0:jemsApplTransactioDate</to>
+                    </copy>
+                    <copy>
+                        <from>ns1:getYearAndMonthFromStrDate($GetBookingDatesOutput.response/ns0:rptPerEndDate)</from>
+                        <to>$WriteSubledgerOutputIn.subledger/ns0:billCycleMonthYear</to>
                     </copy>
                 </assign>
                 <invoke name="InvokeSubledgerWriter" partnerLink="WriteSubledger" operation="WriteSubledgerOutputOperation" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/WriteSubledgerOouput" portType="tns:WriteSubledgerOutputPortType" inputVariable="WriteSubledgerOutputIn"/>
@@ -308,14 +544,23 @@
                         <to>$WriteSubledgerOffsetOutputIn.subledger/ns0:updateTimestamp</to>
                     </copy>
                     <copy>
-                        <from variable="GetFinCatOffsetOut" part="finCatOut"/>
+                        <from>string($GetFinCatOffsetOut.finCatOut)</from>
                         <to>$WriteSubledgerOffsetOutputIn.subledger/ns0:financialCategory</to>
                     </copy>
                 </assign>
                 <invoke name="InvokeSubledgerOffsetWriter" partnerLink="WriteSubledger" operation="WriteSubledgerOutputOperation" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/WriteSubledgerOouput" portType="tns:WriteSubledgerOutputPortType" inputVariable="WriteSubledgerOffsetOutputIn"/>
             </sequence>
         </if>
-        <assign name="AssignResponse"/>
+        <assign name="AssignResponse">
+            <copy>
+                <from>'Record successfully booked'</from>
+                <to variable="MakeBookingResponse" part="responseMessage"/>
+            </copy>
+            <copy>
+                <from>true()</from>
+                <to variable="MakeBookingResponse" part="bookingResult"/>
+            </copy>
+        </assign>
         <reply name="MakeBookingResponse" partnerLink="MakeBookingInput" operation="MakeBookingServiceOperation" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/MakeBookingService" portType="tns:MakeBookingServicePortType" variable="MakeBookingResponse"/>
     </sequence>
 </process>
