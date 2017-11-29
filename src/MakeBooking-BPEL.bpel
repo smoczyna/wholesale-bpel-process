@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <process
-    name="MakeBooking"
+    name="ZMakeBooking"
     targetNamespace="http://enterprise.netbeans.org/bpel/WholesaleBookingProcessor-BPEL/MakeBooking-BPEL"
     xmlns:tns="http://enterprise.netbeans.org/bpel/WholesaleBookingProcessor-BPEL/MakeBooking-BPEL"
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
@@ -21,7 +21,7 @@
         <partnerLink name="FinancialEventCategoryService" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/GetFinEventCategoryService" partnerLinkType="tns:GetFinEventCategoryService" partnerRole="GetFinEventCategoryServicePortTypeRole"/>
         <partnerLink name="BookingDatesService" xmlns:tns="http://j2ee.netbeans.org/wsdl/wholesale-bpel-process/src/GetBookingDatesService" partnerLinkType="tns:GetBookingDatesService" partnerRole="GetBookingDatesServicePortTypeRole"/>
         <partnerLink name="FinCatOffsetService" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/GetFinCatOffsetService" partnerLinkType="tns:GetFinCatOffsetService" partnerRole="GetFinCatOffsetServicePortTypeRole"/>
-        <partnerLink name="WriteSubledger" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/WriteSubledgerOouput" partnerLinkType="tns:WriteSubledgerOouput" partnerRole="WriteSubledgerOouputPortTypeRole"/>
+        <partnerLink name="WriteSubledgerOutput" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/WriteSubledgerOouput" partnerLinkType="tns:WriteSubledgerOouput" partnerRole="WriteSubledgerOouputPortTypeRole"/>
         <partnerLink name="MakeBookingInput" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/MakeBookingService" partnerLinkType="tns:MakeBookingService" myRole="MakeBookingServicePortTypeRole"/>
     </partnerLinks>
     <variables>
@@ -452,7 +452,7 @@
                         <to>$WriteSubledgerOutputIn.subledger/ns0:billCycleMonthYear</to>
                     </copy>
                 </assign>
-                <invoke name="InvokeSubledgerWriter" partnerLink="WriteSubledger" operation="WriteSubledgerOutputOperation" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/WriteSubledgerOouput" portType="tns:WriteSubledgerOutputPortType" inputVariable="WriteSubledgerOutputIn"/>
+                <invoke name="InvokeSubledgerWriter" partnerLink="WriteSubledgerOutput" operation="WriteSubledgerOutputOperation" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/WriteSubledgerOouput" portType="tns:WriteSubledgerOutputPortType" inputVariable="WriteSubledgerOutputIn"/>
                 <invoke name="InvokeFinCatOffset" partnerLink="FinCatOffsetService" operation="GetFinCatOffsetServiceOperation" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/GetFinCatOffsetService" portType="tns:GetFinCatOffsetServicePortType" inputVariable="GetFinCatOffsetIn" outputVariable="GetFinCatOffsetOut"/>
                 <assign name="AssignSubledgerOffset">
                     <copy>
@@ -548,7 +548,7 @@
                         <to>$WriteSubledgerOffsetOutputIn.subledger/ns0:financialCategory</to>
                     </copy>
                 </assign>
-                <invoke name="InvokeSubledgerOffsetWriter" partnerLink="WriteSubledger" operation="WriteSubledgerOutputOperation" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/WriteSubledgerOouput" portType="tns:WriteSubledgerOutputPortType" inputVariable="WriteSubledgerOffsetOutputIn"/>
+                <invoke name="InvokeSubledgerOffsetWriter" partnerLink="WriteSubledgerOutput" operation="WriteSubledgerOutputOperation" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/WriteSubledgerOouput" portType="tns:WriteSubledgerOutputPortType" inputVariable="WriteSubledgerOffsetOutputIn"/>
             </sequence>
         </if>
         <assign name="AssignResponse">

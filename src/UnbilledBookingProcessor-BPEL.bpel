@@ -16,10 +16,10 @@
     <import namespace="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/GetDataEventService" location="GetDataEventService.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
     <import namespace="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/MakeBookingService" location="MakeBookingService.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
     <partnerLinks>
-        <partnerLink name="WriteDataErrorService" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/WriteDataErrorService" partnerLinkType="tns:WriteDataErrorService" partnerRole="WriteDataErrorServicePortTypeRole"/>
-        <partnerLink name="GetDataEvent" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/GetDataEventService" partnerLinkType="tns:GetDataEventService" partnerRole="GetDataEventServicePortTypeRole"/>
+        <partnerLink name="WriteDataErrorOutput" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/WriteDataErrorService" partnerLinkType="tns:WriteDataErrorService" partnerRole="WriteDataErrorServicePortTypeRole"/>
+        <partnerLink name="DataEventService" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/GetDataEventService" partnerLinkType="tns:GetDataEventService" partnerRole="GetDataEventServicePortTypeRole"/>
         <partnerLink name="MakeBookingService" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/MakeBookingService" partnerLinkType="tns:MakeBookingService" partnerRole="MakeBookingServicePortTypeRole"/>
-        <partnerLink name="WriteWholesaleReportService" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/WriteWholesaleReportOutput" partnerLinkType="tns:WriteWholesaleReportOutput" partnerRole="WriteWholesaleReportOutputPortTypeRole"/>
+        <partnerLink name="WriteWholesaleReportOutput" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/WriteWholesaleReportOutput" partnerLinkType="tns:WriteWholesaleReportOutput" partnerRole="WriteWholesaleReportOutputPortTypeRole"/>
         <partnerLink name="ReadUnbilledSource" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/ReadUnbilledRecordService" partnerLinkType="tns:ReadUnbilledRecordService" myRole="ReadUnbilledRecordServicePortTypeRole"/>
     </partnerLinks>
     <variables>
@@ -56,7 +56,7 @@
                         <to variable="WriteDataErrorServiceInput" part="unbilled"/>
                     </copy>
                 </assign>
-                <invoke name="WriteToBadData" partnerLink="WriteDataErrorService" operation="WriteDataErrorServiceOperation" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/WriteDataErrorService" portType="tns:WriteDataErrorServicePortType" inputVariable="WriteDataErrorServiceInput"/>
+                <invoke name="WriteToBadDataOutput" partnerLink="WriteDataErrorOutput" operation="WriteDataErrorServiceOperation" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/WriteDataErrorService" portType="tns:WriteDataErrorServicePortType" inputVariable="WriteDataErrorServiceInput"/>
                 <exit name="SkipBadRecord"/>
             </sequence>
         </if>
@@ -149,7 +149,7 @@
                             <to variable="GetDataEventInput" part="productId"/>
                         </copy>
                     </assign>
-                    <invoke name="CallDataEvent" partnerLink="GetDataEvent" operation="GetDataEventServiceOperation" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/GetDataEventService" portType="tns:GetDataEventServicePortType" inputVariable="GetDataEventInput" outputVariable="GetDataEventOutput"/>
+                    <invoke name="CallDataEventService" partnerLink="DataEventService" operation="GetDataEventServiceOperation" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/GetDataEventService" portType="tns:GetDataEventServicePortType" inputVariable="GetDataEventInput" outputVariable="GetDataEventOutput"/>
                     <if name="If3G">
                         <condition>$GetDataEventOutput.dataEventDbOutput/ns0:dataeventsubtype = 'DEFLT'</condition>
                         <assign name="Assign3G">
@@ -205,10 +205,10 @@
                 <to>$MakeBookingInput.bookingInput/ns0:homeEqualsServingSbid</to>
             </copy>
         </assign>
-        <invoke name="InvokeMakeBooking" partnerLink="MakeBookingService" operation="MakeBookingServiceOperation" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/MakeBookingService" portType="tns:MakeBookingServicePortType" inputVariable="MakeBookingInput" outputVariable="MakeBookingOutput"/>
+        <invoke name="CallMakeBookingServce" partnerLink="MakeBookingService" operation="MakeBookingServiceOperation" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/MakeBookingService" portType="tns:MakeBookingServicePortType" inputVariable="MakeBookingInput" outputVariable="MakeBookingOutput"/>
         <if name="If1">
             <condition>$MakeBookingOutput.bookingResult</condition>
-            <invoke name="WriteWholesaleREport" partnerLink="WriteWholesaleReportService" operation="WriteWholesaleReportOutputOperation" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/WriteWholesaleReportOutput" portType="tns:WriteWholesaleReportOutputPortType" inputVariable="WriteWholesaleReportOut"/>
+            <invoke name="WriteWholesaleOutput" partnerLink="WriteWholesaleReportOutput" operation="WriteWholesaleReportOutputOperation" xmlns:tns="http://j2ee.netbeans.org/wsdl/WholesaleBookingProcessor-BPEL/src/WriteWholesaleReportOutput" portType="tns:WriteWholesaleReportOutputPortType" inputVariable="WriteWholesaleReportOut"/>
         </if>
     </sequence>
 </process>
